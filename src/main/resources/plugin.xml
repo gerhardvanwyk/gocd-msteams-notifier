@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<go-plugin id="slack.notifier" version="1">
+    <about>
+        <name>MS Teams Notification Plugin</name>
+        <version>2.0.2</version>
+        <target-go-version>17.11.0</target-go-version>
+        <description>Plugin to send build notifications to MS Teams</description>
+        <vendor>
+            <name>Roxor Gaming</name>
+            <url>www.roxorgaming.co.za</url>
+        </vendor>
+    </about>
+</go-plugin>
