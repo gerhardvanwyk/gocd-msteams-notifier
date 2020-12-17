@@ -4,9 +4,9 @@ import com.roxorgaming.gocd.msteams.jsonapi.MaterialRevision;
 import com.roxorgaming.gocd.msteams.jsonapi.Modification;
 import com.roxorgaming.gocd.msteams.jsonapi.Pipeline;
 import com.roxorgaming.gocd.msteams.jsonapi.Stage;
-import com.roxorgaming.gocd.mstream.notification.GoNotificationService;
-import com.roxorgaming.gocd.mstream.configuration.PipelineStatus;
 import com.roxorgaming.gocd.mstream.configuration.Configuration;
+import com.roxorgaming.gocd.mstream.configuration.PipelineStatus;
+import com.roxorgaming.gocd.mstream.notification.PipelineInfo;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import in.ashwanthkumar.utils.collections.Lists;
 
@@ -31,21 +31,22 @@ public class Message {
 
     private final Configuration configuration;
 
-    private final GoNotificationService service;
+    private final List<MaterialRevision> changes;
 
     private final PipelineStatus status;
 
-    public Message(Configuration configuration, PipelineStatus status, GoNotificationService service) {
+    public Message(Configuration configuration, Pipeline details, PipelineInfo pipelineInfo,
+                   PipelineStatus status, List<MaterialRevision> changes ) {
         this.configuration = configuration;
-        this.service = service;
         this.status = status;
-        try {
-            this.details = service.fetchDetails(configuration);
-        } catch (IOException | GoNotificationService.BuildDetailsNotFoundException e) {
-            throw new RuntimeException("Could not fetch message details", e);
-        }
-        this.stage = pickCurrentStage(details.getStages(), service);
-        this.title = String.format("Stage [%s] %s %s", service.fullyQualifiedJobName(), verbFor(status),
+        this.details = details;
+        this.changes = changes;
+//        try {
+//        } catch (IOException | GoNotificationService.BuildDetailsNotFoundException e) {
+//            throw new RuntimeException("Could not fetch message details", e);
+//        }
+        this.stage = pickCurrentStage(details.getStages(), pipelineInfo.getStage().getName(), details.getName());
+        this.title = String.format("Stage [%s] %s %s", pipelineInfo.fullyQualifiedJobName(), verbFor(status),
                 status).replaceAll("\\s+", " ");
     }
 
@@ -92,7 +93,6 @@ public class Message {
     private void rootConfigDetails(StringBuffer buffer) throws URISyntaxException, IOException {
         if (configuration.isDisplayMaterialChanges()) {
 
-            List<MaterialRevision> changes = service.fetchChanges(configuration);
             for (MaterialRevision change : changes) {
                 StringBuilder sb = new StringBuilder();
                 boolean isTruncated = false;
@@ -182,13 +182,13 @@ public class Message {
         }
     }
 
-    private Stage pickCurrentStage(Stage[] stages, GoNotificationService message) {
+    private Stage pickCurrentStage(Stage[] stages, String stageName, String pipelineName) {
         for (Stage stage : stages) {
-            if (message.getStageName().equals(stage.getName())) {
+            if (stageName.equals(stage.getName())) {
                 return stage;
             }
         }
-        throw new IllegalArgumentException("The list of stages from the pipeline (" + message.getPipelineName() +
-                ") doesn't have the active stage (" + message.getStageName() + ") for which we got the notification.");
+        throw new IllegalArgumentException("The list of stages from the pipeline (" + pipelineName +
+                ") doesn't have the active stage (" + stageName + ") for which we got the notification.");
     }
 }

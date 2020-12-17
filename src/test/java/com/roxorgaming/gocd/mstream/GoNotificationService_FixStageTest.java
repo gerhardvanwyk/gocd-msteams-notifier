@@ -326,17 +326,17 @@ public class GoNotificationService_FixStageTest {
     @MethodSource("data")
     @Disabled
     public void shouldResolveCorrectStageStatus() throws IOException {
-        GoCdClient goCdClient = mock(GoCdClient.class);
-        when(goCdClient.getPipelineHistory(PIPELINE_NAME)).thenReturn(pipelineHistory);
-
-        GoNotificationService message = new GoNotificationService(
-                TestUtils.createMockServerFactory(goCdClient),
-                pipeline
-        );
-
-        message.tryToFixStageResult(new Configuration());
-
-        Assertions.assertEquals(message.getStageResult(), is(expectedStatus));
+//        GoCdClient goCdClient = mock(GoCdClient.class);
+//        when(goCdClient.getPipelineHistory(PIPELINE_NAME)).thenReturn(pipelineHistory);
+//
+//        GoNotificationService message = new GoNotificationService(
+//                TestUtils.createMockServerFactory(goCdClient),
+//                pipeline
+//        );
+//
+//        message.tryToFixStageResult(new Configuration());
+//
+//        Assertions.assertEquals(message.getStageResult(), is(expectedStatus));
     }
 
     /**

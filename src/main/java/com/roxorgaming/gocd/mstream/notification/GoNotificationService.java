@@ -17,10 +17,9 @@ public class GoNotificationService {
     // Internal cache of pipeline history data from GoCD's JSON API.
   //  private History mRecentPipelineHistory;
 
-    public GoNotificationService(Configuration configuration) {
-        goApiClient  = new GoCdClient(configuration);
+    public GoNotificationService(GoCdClient goCdClient) {
+        goApiClient  = goCdClient;
     }
-
 
     /**
      * Raised when we can't find information about our build in the array
@@ -34,12 +33,6 @@ public class GoNotificationService {
                                 pipelineName, pipelineCounter));
         }
     }
-
-//    public String goServerUrl(String host) throws URISyntaxException {
-//        return new URI(String.format("%s/go/pipelines/%s/%s/%s/%s", host, pipeline.getName(), pipeline.getCounter(),
-//                pipeline.getStage().getName(), pipeline.getStage().getCounter())).normalize().toASCIIString();
-//    }
-
 
     /**
      * Try to find the build in history with the pipelineName and counter
@@ -67,7 +60,7 @@ public class GoNotificationService {
 
     /**
      * Logic to get a more correct representation of the current state of a pipeline
-     * @param configuration
+     * @param pipeline
      */
     public void tryToFixStageResult(PipelineInfo pipeline)
     {
@@ -123,13 +116,11 @@ public class GoNotificationService {
         }
     }
 
-    public Pipeline fetchDetails(Configuration configuration) throws IOException, BuildDetailsNotFoundException
-    {
-        return fetchDetailsFromHistory(configuration, Integer.parseInt(getPipelineCounter()));
+    public History fetchHistory(String pipelineName) throws IOException {
+        return goApiClient.getPipelineHistory(pipelineName);
     }
 
-    public List<MaterialRevision> fetchChanges(Configuration configuration) throws IOException
-    {
+    public List<MaterialRevision> fetchChanges(PipelineInfo pipeline) throws IOException {
         Pipeline pipelineInstance =
                 goApiClient.getPipelineInstance(pipeline.getName(), Integer.parseInt(pipeline.getCounter()));
         return pipelineInstance.rootChanges(goApiClient);

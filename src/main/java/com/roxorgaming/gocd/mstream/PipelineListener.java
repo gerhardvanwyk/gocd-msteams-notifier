@@ -1,7 +1,8 @@
 package com.roxorgaming.gocd.mstream;
 
+import com.roxorgaming.gocd.msteams.jsonapi.GoCdClient;
+import com.roxorgaming.gocd.msteams.jsonapi.History;
 import com.roxorgaming.gocd.mstream.configuration.Configuration;
-import com.roxorgaming.gocd.mstream.configuration.PipelineStatus;
 import com.roxorgaming.gocd.mstream.notification.GoNotificationService;
 import com.roxorgaming.gocd.mstream.notification.PipelineInfo;
 import com.thoughtworks.go.plugin.api.logging.Logger;
@@ -17,84 +18,37 @@ abstract public class PipelineListener {
 
     private GoNotificationService service;
 
-    public PipelineListener(Configuration configuration) {
-        this.configuration = configuration;
-        this.service = new GoNotificationService(configuration);
+    public PipelineListener(GoCdClient goCdClient) {
+        this.configuration = goCdClient.getConfiguration();
+        this.service = new GoNotificationService(goCdClient);
     }
 
-    public void notify(PipelineInfo message) throws Exception {
-        message.tryToFixStageResult(configuration);
-        LOG.debug(String.format("Finding rules with state %s", message.getStageResult()));
-        List<PipelineConfig> foundRules = configuration.find(message.getPipelineName(), message.getStageName(),
-                message.getPipelineGroup(), message.getStageResult());
+    public void notify(PipelineInfo pipelineInfo) throws Exception {
+
+        this.service.tryToFixStageResult(pipelineInfo);
+
+        String stageResult = pipelineInfo.getStage().getResult();
+        String stageName = pipelineInfo.getStage().getName();
+
+        LOG.debug(String.format("Finding rules with state %s", stageResult));
+        List<PipelineConfig> foundRules = configuration.find(pipelineInfo.getName(), stageName, pipelineInfo.getGroup(), stageResult);
+        History history = this.service.fetchHistory(pipelineInfo.getName());
         if (foundRules.size() > 0) {
             for (PipelineConfig pipelineConfig : foundRules) {
                 LOG.debug(String.format("Matching rule is %s", pipelineConfig));
-                handlePipelineStatus(pipelineConfig, PipelineStatus.valueOf(message.getStageResult().toUpperCase()), message);
-//                if (! configuration.getProcessAllRules()) {
-//                    break;
-//                }
+                onMessage(pipelineConfig, pipelineInfo, history);
             }
+
         } else {
-            LOG.warn(String.format("Couldn't find any matching rule for %s/%s with status=%s", message.getPipelineName(),
-                    message.getStageName(), message.getStageResult()));
+            LOG.warn(String.format("Couldn't find any matching rule for %s/%s with status=%s", stageName,
+                    stageName, stageResult));
         }
     }
 
-    protected void handlePipelineStatus(PipelineConfig rule, PipelineStatus status, GoNotificationService message) throws Exception {
-        status.handle(this, rule, message);
-    }
-
     /**
-     * Invoked when pipeline is BUILDING
-     *
-     * @param rule
-     * @param message
-     * @throws Exception
+     * Send a message for each config that matches the notification
+     * @param config
      */
-    public abstract void onBuilding(PipelineConfig rule, GoNotificationService message) throws Exception;
+    public abstract void onMessage(final PipelineConfig config, PipelineInfo pipelineInfo, History history);
 
-    /**
-     * Invoked when pipeline PASSED
-     *
-     * @param message
-     * @throws Exception
-     */
-    public abstract void onPassed(PipelineConfig rule, GoNotificationService message) throws Exception;
-
-    /**
-     * Invoked when pipeline FAILED
-     *
-     * @param message
-     * @throws Exception
-     */
-    public abstract void onFailed(PipelineConfig rule, GoNotificationService message) throws Exception;
-
-    /**
-     * Invoked when pipeline is BROKEN
-     *
-     * Note - This currently is not implemented
-     *
-     * @param message
-     * @throws Exception
-     */
-    public abstract void onBroken(PipelineConfig rule, GoNotificationService message) throws Exception;
-
-    /**
-     * Invoked when pipeline is FIXED
-     *
-     * Note - This currently is not implemented
-     *
-     * @param message
-     * @throws Exception
-     */
-    public abstract void onFixed(PipelineConfig rule, GoNotificationService message) throws Exception;
-
-    /**
-     * Invoked when pipeline is CANCELLED
-     *
-     * @param message
-     * @throws Exception
-     */
-    public abstract void onCancelled(PipelineConfig rule, GoNotificationService message) throws Exception;
 }

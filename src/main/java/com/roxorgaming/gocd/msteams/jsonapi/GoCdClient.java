@@ -31,7 +31,6 @@ public class GoCdClient {
      */
     public GoCdClient(Configuration configuration) {
         this.mConfiguration = configuration;
-
     }
 
     /**
@@ -117,5 +116,9 @@ public class GoCdClient {
         } catch (MalformedURLException e) {
             throw new RuntimeException("Could not create URL for " + pipelineName, e);
         }
+    }
+
+    public Configuration getConfiguration(){
+        return this.mConfiguration;
     }
 }

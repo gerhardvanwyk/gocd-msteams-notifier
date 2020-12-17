@@ -49,6 +49,10 @@ public class Stage extends Job {
     @JsonProperty("scheduled")
     private Boolean scheduled;
 
+    public Stage(String result){
+        this.result = result;
+    }
+
     public Stage(String name, int counter, String result){
         this.name = name;
         this.counter = counter;

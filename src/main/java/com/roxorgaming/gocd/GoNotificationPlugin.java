@@ -1,6 +1,7 @@
 package com.roxorgaming.gocd;
 
 import com.google.gson.GsonBuilder;
+import com.roxorgaming.gocd.msteams.jsonapi.GoCdClient;
 import com.roxorgaming.gocd.mstream.GoEnvironment;
 import com.roxorgaming.gocd.mstream.MsTeamsPipelineListener;
 import com.roxorgaming.gocd.mstream.PipelineListener;
@@ -47,6 +48,7 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
         /**
          * Scheduler to read config file
          * Configuration can change at runtime. Read in the new file.
+         * This code instantiate the GoCD API client, and is not tested.
          */
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -60,7 +62,7 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
                 try {
                     lock.writeLock().lock();
                     configuration = ConfigReader.read(pluginConfigFile);
-                    pipelineListener = new MsTeamsPipelineListener(configuration);
+                    pipelineListener = new MsTeamsPipelineListener(new GoCdClient(configuration));
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage(), e);
                 } finally {
@@ -73,7 +75,7 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
     }
 
     // used for tests
-    GoNotificationPlugin(GoEnvironment environment) {
+    public GoNotificationPlugin(GoEnvironment environment) {
         this.environment = environment;
     }
 
