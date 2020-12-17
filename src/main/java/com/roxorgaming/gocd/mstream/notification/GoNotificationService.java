@@ -1,37 +1,26 @@
 package com.roxorgaming.gocd.mstream.notification;
 
-import com.google.gson.annotations.SerializedName;
 import com.roxorgaming.gocd.msteams.jsonapi.*;
-import com.roxorgaming.gocd.mstream.PipelineInfo;
 import com.roxorgaming.gocd.mstream.configuration.Configuration;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import in.ashwanthkumar.utils.lang.StringUtils;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
-public class GoNotificationMessage {
+public class GoNotificationService {
 
-    private Logger LOG = Logger.getLoggerFor(GoNotificationMessage.class);
+    private Logger LOG = Logger.getLoggerFor(GoNotificationService.class);
 
-    private final ServerFactory serverFactory;
-
-    @SerializedName("pipeline")
-    private PipelineInfo pipeline;
+    private final GoCdClient goApiClient;
 
     // Internal cache of pipeline history data from GoCD's JSON API.
-    private History mRecentPipelineHistory;
+  //  private History mRecentPipelineHistory;
 
-    public GoNotificationMessage() {
-        serverFactory = new ServerFactory();
+    public GoNotificationService(Configuration configuration) {
+        goApiClient  = new GoCdClient(configuration);
     }
 
-    public GoNotificationMessage(ServerFactory serverFactory, PipelineInfo pipeline) {
-        this.serverFactory = serverFactory;
-        this.pipeline = pipeline;
-    }
 
     /**
      * Raised when we can't find information about our build in the array
@@ -46,69 +35,24 @@ public class GoNotificationMessage {
         }
     }
 
-    public String goServerUrl(String host) throws URISyntaxException {
-        return new URI(String.format("%s/go/pipelines/%s/%s/%s/%s", host, pipeline.getName(), pipeline.getCounter(),
-                pipeline.getStage().getName(), pipeline.getStage().getCounter())).normalize().toASCIIString();
-    }
+//    public String goServerUrl(String host) throws URISyntaxException {
+//        return new URI(String.format("%s/go/pipelines/%s/%s/%s/%s", host, pipeline.getName(), pipeline.getCounter(),
+//                pipeline.getStage().getName(), pipeline.getStage().getCounter())).normalize().toASCIIString();
+//    }
 
-    public String fullyQualifiedJobName() {
-        return pipeline.getName() + "/" + pipeline.getCounter() + "/" + pipeline.getStage().getName() + "/" + pipeline.getStage().getCounter();
-    }
-
-    public String getPipelineName() {
-        return pipeline.getName();
-    }
-
-    public String getPipelineCounter() {
-        return pipeline.getCounter();
-    }
-
-    public String getStageName() {
-        return pipeline.getStage().getName();
-    }
-
-    public String getStageCounter() {
-        return pipeline.getStage().getCounter();
-    }
-
-    public String getStageState() {
-        return pipeline.getStage().getState();
-    }
-
-    public String getStageResult() {
-        return pipeline.getStage().getResult();
-    }
-
-    public String getCreateTime() {
-        return pipeline.getStage().getCreateTime();
-    }
-
-    public String getLastTransitionTime() {
-        return pipeline.getStage().getLastTransitionTime();
-    }
-
-    public String getPipelineGroup() {
-        return pipeline.getGroup();
-    }
 
     /**
-     * Fetch the full history of this pipeline from the server.  We can't
-     * get specify a specific version, unfortunately.
+     * Try to find the build in history with the pipelineName and counter
+     * @param pipelineName
+     * @param counter
+     * @return
+     * @throws IOException
+     * @throws BuildDetailsNotFoundException
      */
-    public History fetchRecentPipelineHistory(Configuration configuration)
-        throws IOException
-    {
-        if (mRecentPipelineHistory == null) {
-            GoCdClient goCdClient = serverFactory.getServer(configuration);
-            mRecentPipelineHistory = goCdClient.getPipelineHistory(pipeline.getName());
-        }
-        return mRecentPipelineHistory;
-    }
-
-    public Pipeline fetchDetailsForBuild(Configuration configuration, int counter) throws  IOException,
+    public Pipeline fetchDetailsFromHistory(String pipelineName, int counter) throws  IOException,
             BuildDetailsNotFoundException
     {
-        History history = fetchRecentPipelineHistory(configuration);
+        History history = goApiClient.getPipelineHistory(pipelineName);
         if (history != null) {
             List<Pipeline> pipelines = history.getPipelines();
             // Search through the builds in our recent history, and hope that
@@ -118,13 +62,19 @@ public class GoNotificationMessage {
                     return build;
             }
         }
-        throw new BuildDetailsNotFoundException(getPipelineName(), counter);
+        throw new BuildDetailsNotFoundException(pipelineName, counter);
     }
 
-    public void tryToFixStageResult(Configuration configuration)
+    /**
+     * Logic to get a more correct representation of the current state of a pipeline
+     * @param configuration
+     */
+    public void tryToFixStageResult(PipelineInfo pipeline)
     {
         String currentStatus = pipeline.getStage().getState().toUpperCase();
         String currentResult = pipeline.getStage().getResult().toUpperCase();
+
+        //We assume building when state = building and result = unknown
         if (currentStatus.equals("BUILDING") && currentResult.equals("UNKNOWN")) {
             pipeline.getStage().setResult("Building");
             return;
@@ -138,7 +88,7 @@ public class GoNotificationMessage {
         // low-priority tweak.
         History history = null;
         try {
-            history = fetchRecentPipelineHistory(configuration);
+            history = goApiClient.getPipelineHistory(pipeline.getName());
         } catch(Exception e) {
             LOG.warn(String.format("Error getting pipeline history: " +
                                    e.getMessage()));
@@ -163,23 +113,25 @@ public class GoNotificationMessage {
         // only, but our callers should all be using toUpperCase on it in
         // any event.
         //LOG.info("current: "+currentResult + ", previous: "+previousResult);
-        if (currentResult.equals("PASSED") && !previousResult.equals("PASSED"))
+        if (currentResult.equals("PASSED") && !previousResult.equals("PASSED")) {
             pipeline.getStage().setResult("Fixed");
+        }
+
         else if (currentResult.equals("FAILED") &&
-                 previousResult.equals("PASSED"))
-            pipeline.getStage().setResult( "Broken");
+                 previousResult.equals("PASSED")) {
+            pipeline.getStage().setResult("Broken");
+        }
     }
 
     public Pipeline fetchDetails(Configuration configuration) throws IOException, BuildDetailsNotFoundException
     {
-        return fetchDetailsForBuild(configuration, Integer.parseInt(getPipelineCounter()));
+        return fetchDetailsFromHistory(configuration, Integer.parseInt(getPipelineCounter()));
     }
 
     public List<MaterialRevision> fetchChanges(Configuration configuration) throws IOException
     {
-        GoCdClient goCdClient = serverFactory.getServer(configuration);
         Pipeline pipelineInstance =
-            goCdClient.getPipelineInstance(pipeline.getName(), Integer.parseInt(pipeline.getCounter()));
-        return pipelineInstance.rootChanges(goCdClient);
+                goApiClient.getPipelineInstance(pipeline.getName(), Integer.parseInt(pipeline.getCounter()));
+        return pipelineInstance.rootChanges(goApiClient);
     }
 }

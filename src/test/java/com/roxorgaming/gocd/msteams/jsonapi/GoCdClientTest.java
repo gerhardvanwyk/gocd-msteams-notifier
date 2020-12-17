@@ -6,7 +6,6 @@ import org.junit.jupiter.api.*;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;

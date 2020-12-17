@@ -1,4 +1,4 @@
-package com.roxorgaming.gocd.mstream;
+package com.roxorgaming.gocd.mstream.notification;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;

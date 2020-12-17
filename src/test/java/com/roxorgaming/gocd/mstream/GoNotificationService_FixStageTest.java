@@ -5,7 +5,9 @@ import com.roxorgaming.gocd.msteams.jsonapi.Pipeline;
 import com.roxorgaming.gocd.msteams.jsonapi.GoCdClient;
 import com.roxorgaming.gocd.msteams.jsonapi.Stage;
 import com.roxorgaming.gocd.mstream.configuration.Configuration;
-import com.roxorgaming.gocd.mstream.notification.GoNotificationMessage;
+import com.roxorgaming.gocd.mstream.notification.GoNotificationService;
+import com.roxorgaming.gocd.mstream.notification.PipelineInfo;
+import com.roxorgaming.gocd.mstream.notification.StageInfo;
 import com.roxorgaming.gocd.mstream.util.TestUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
@@ -21,7 +23,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class GoNotificationMessage_FixStageTest {
+public class GoNotificationService_FixStageTest {
 
     public static final String PIPELINE_NAME = "PL";
     public static final String STAGE_NAME = "STG";
@@ -30,7 +32,7 @@ public class GoNotificationMessage_FixStageTest {
     private PipelineInfo pipeline;
     private String expectedStatus;
 
-    public GoNotificationMessage_FixStageTest(History pipelineHistory, PipelineInfo pipeline, String expectedStatus) {
+    public GoNotificationService_FixStageTest(History pipelineHistory, PipelineInfo pipeline, String expectedStatus) {
         this.pipelineHistory = pipelineHistory;
         this.pipeline = pipeline;
         this.expectedStatus = expectedStatus;
@@ -327,7 +329,7 @@ public class GoNotificationMessage_FixStageTest {
         GoCdClient goCdClient = mock(GoCdClient.class);
         when(goCdClient.getPipelineHistory(PIPELINE_NAME)).thenReturn(pipelineHistory);
 
-        GoNotificationMessage message = new GoNotificationMessage(
+        GoNotificationService message = new GoNotificationService(
                 TestUtils.createMockServerFactory(goCdClient),
                 pipeline
         );

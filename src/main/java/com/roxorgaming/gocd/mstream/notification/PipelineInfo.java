@@ -1,4 +1,4 @@
-package com.roxorgaming.gocd.mstream;
+package com.roxorgaming.gocd.mstream.notification;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;
@@ -23,6 +23,10 @@ public class PipelineInfo {
     public PipelineInfo(String name, int counter) {
         this.name = name;
         this.counter = Integer.toString( counter);
+    }
+
+    public String fullyQualifiedJobName() {
+        return getName() + "/" + getCounter() + "/" + getStage().getName() + "/" + getStage().getCounter();
     }
 
     @Override

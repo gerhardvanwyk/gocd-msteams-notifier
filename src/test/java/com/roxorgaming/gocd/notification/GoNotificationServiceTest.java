@@ -1,23 +1,23 @@
-package com.roxorgaming.gocd.mstream;
+package com.roxorgaming.gocd.notification;
 
 import com.roxorgaming.gocd.msteams.jsonapi.*;
+import com.roxorgaming.gocd.msteams.jsonapi.History;
+import com.roxorgaming.gocd.mstream.notification.PipelineInfo;
 import com.roxorgaming.gocd.mstream.configuration.Configuration;
-import com.roxorgaming.gocd.mstream.notification.GoNotificationMessage;
+import com.roxorgaming.gocd.mstream.notification.GoNotificationService;
 import com.roxorgaming.gocd.mstream.util.TestUtils;
-import in.ashwanthkumar.utils.collections.Lists;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.List;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class GoNotificationMessageTest {
+public class GoNotificationServiceTest {
 
     private static final String PIPELINE_NAME = "pipeline";
 
@@ -35,7 +35,7 @@ public class GoNotificationMessageTest {
         }));
         when(goCdClient.getPipelineHistory(PIPELINE_NAME)).thenReturn(pipelineHistory);
 
-        GoNotificationMessage message = new GoNotificationMessage(
+        GoNotificationService message = new GoNotificationService(
                 TestUtils.createMockServerFactory(goCdClient),
                 info(PIPELINE_NAME, 10)
         );
@@ -57,11 +57,11 @@ public class GoNotificationMessageTest {
         }));
         when(goCdClient.getPipelineHistory(PIPELINE_NAME)).thenReturn(pipelineHistory);
 
-        GoNotificationMessage message = new GoNotificationMessage(
+        GoNotificationService message = new GoNotificationService(
                 TestUtils.createMockServerFactory(goCdClient),
                 info(PIPELINE_NAME, 10)
         );
-        Assertions.assertThrows(GoNotificationMessage.BuildDetailsNotFoundException.class, () ->
+        Assertions.assertThrows(GoNotificationService.BuildDetailsNotFoundException.class, () ->
             message.fetchDetails(new Configuration())
         );
     }
@@ -76,13 +76,37 @@ public class GoNotificationMessageTest {
         }));
         when(goCdClient.getPipelineHistory("something-different")).thenReturn(pipelineHistory);
 
-        GoNotificationMessage message = new GoNotificationMessage(
+        GoNotificationService message = new GoNotificationService(
                 TestUtils.createMockServerFactory(goCdClient),
                 info(PIPELINE_NAME, 10)
         );
-        Assertions.assertThrows(GoNotificationMessage.BuildDetailsNotFoundException.class, () ->
+        Assertions.assertThrows(GoNotificationService.BuildDetailsNotFoundException.class, () ->
             message.fetchDetails(new Configuration())
         );
+    }
+
+    @Test
+    public void fix_stage_results() throws Exception {
+        GoCdClient goCdClient = mock(GoCdClient.class);
+
+        History pipelineHistory = new History();
+        Stage stage = new Stage();
+        stage.setState("Broken");
+        stage.setState("Failed");
+        pipelineHistory.setPipelines(Arrays.asList(new Pipeline[]{
+                new Pipeline("pipeline1", 10, new Stage[]{stage})
+        }));
+        when(goCdClient.getPipelineHistory("something-different")).thenReturn(pipelineHistory);
+
+        GoNotificationService message = new GoNotificationService(
+                TestUtils.createMockServerFactory(goCdClient),
+                info(PIPELINE_NAME, 10)
+        );
+
+        message.tryToFixStageResult(new Configuration());
+
+        pipelineHistory.getPipelines();
+
     }
 
     private static Pipeline pipeline(String name, int counter) {

@@ -5,7 +5,6 @@ import com.microsoft.graph.models.extensions.IGraphServiceClient;
 import com.microsoft.graph.models.extensions.ItemBody;
 import com.microsoft.graph.models.generated.BodyType;
 import com.microsoft.graph.requests.extensions.GraphServiceClient;
-import com.roxorgaming.gocd.msteams.jsonapi.Message;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

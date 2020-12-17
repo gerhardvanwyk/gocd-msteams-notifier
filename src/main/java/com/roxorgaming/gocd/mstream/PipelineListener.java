@@ -2,7 +2,8 @@ package com.roxorgaming.gocd.mstream;
 
 import com.roxorgaming.gocd.mstream.configuration.Configuration;
 import com.roxorgaming.gocd.mstream.configuration.PipelineStatus;
-import com.roxorgaming.gocd.mstream.notification.GoNotificationMessage;
+import com.roxorgaming.gocd.mstream.notification.GoNotificationService;
+import com.roxorgaming.gocd.mstream.notification.PipelineInfo;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.roxorgaming.gocd.mstream.configuration.PipelineConfig;
 
@@ -14,11 +15,14 @@ abstract public class PipelineListener {
 
     protected Configuration configuration;
 
+    private GoNotificationService service;
+
     public PipelineListener(Configuration configuration) {
         this.configuration = configuration;
+        this.service = new GoNotificationService(configuration);
     }
 
-    public void notify(GoNotificationMessage message) throws Exception {
+    public void notify(PipelineInfo message) throws Exception {
         message.tryToFixStageResult(configuration);
         LOG.debug(String.format("Finding rules with state %s", message.getStageResult()));
         List<PipelineConfig> foundRules = configuration.find(message.getPipelineName(), message.getStageName(),
@@ -37,7 +41,7 @@ abstract public class PipelineListener {
         }
     }
 
-    protected void handlePipelineStatus(PipelineConfig rule, PipelineStatus status, GoNotificationMessage message) throws Exception {
+    protected void handlePipelineStatus(PipelineConfig rule, PipelineStatus status, GoNotificationService message) throws Exception {
         status.handle(this, rule, message);
     }
 
@@ -48,7 +52,7 @@ abstract public class PipelineListener {
      * @param message
      * @throws Exception
      */
-    public abstract void onBuilding(PipelineConfig rule, GoNotificationMessage message) throws Exception;
+    public abstract void onBuilding(PipelineConfig rule, GoNotificationService message) throws Exception;
 
     /**
      * Invoked when pipeline PASSED
@@ -56,7 +60,7 @@ abstract public class PipelineListener {
      * @param message
      * @throws Exception
      */
-    public abstract void onPassed(PipelineConfig rule, GoNotificationMessage message) throws Exception;
+    public abstract void onPassed(PipelineConfig rule, GoNotificationService message) throws Exception;
 
     /**
      * Invoked when pipeline FAILED
@@ -64,7 +68,7 @@ abstract public class PipelineListener {
      * @param message
      * @throws Exception
      */
-    public abstract void onFailed(PipelineConfig rule, GoNotificationMessage message) throws Exception;
+    public abstract void onFailed(PipelineConfig rule, GoNotificationService message) throws Exception;
 
     /**
      * Invoked when pipeline is BROKEN
@@ -74,7 +78,7 @@ abstract public class PipelineListener {
      * @param message
      * @throws Exception
      */
-    public abstract void onBroken(PipelineConfig rule, GoNotificationMessage message) throws Exception;
+    public abstract void onBroken(PipelineConfig rule, GoNotificationService message) throws Exception;
 
     /**
      * Invoked when pipeline is FIXED
@@ -84,7 +88,7 @@ abstract public class PipelineListener {
      * @param message
      * @throws Exception
      */
-    public abstract void onFixed(PipelineConfig rule, GoNotificationMessage message) throws Exception;
+    public abstract void onFixed(PipelineConfig rule, GoNotificationService message) throws Exception;
 
     /**
      * Invoked when pipeline is CANCELLED
@@ -92,5 +96,5 @@ abstract public class PipelineListener {
      * @param message
      * @throws Exception
      */
-    public abstract void onCancelled(PipelineConfig rule, GoNotificationMessage message) throws Exception;
+    public abstract void onCancelled(PipelineConfig rule, GoNotificationService message) throws Exception;
 }

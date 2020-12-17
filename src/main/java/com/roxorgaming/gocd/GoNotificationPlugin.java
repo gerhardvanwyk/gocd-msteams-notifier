@@ -1,10 +1,14 @@
-package com.roxorgaming.gocd.mstream;
+package com.roxorgaming.gocd;
 
 import com.google.gson.GsonBuilder;
+import com.roxorgaming.gocd.mstream.GoEnvironment;
+import com.roxorgaming.gocd.mstream.MsTeamsPipelineListener;
+import com.roxorgaming.gocd.mstream.PipelineListener;
 import com.roxorgaming.gocd.mstream.base.AbstractNotificationPlugin;
 import com.roxorgaming.gocd.mstream.configuration.Configuration;
 import com.roxorgaming.gocd.mstream.configuration.ConfigReader;
-import com.roxorgaming.gocd.mstream.notification.GoNotificationMessage;
+import com.roxorgaming.gocd.mstream.notification.GoNotificationService;
+import com.roxorgaming.gocd.mstream.notification.PipelineInfo;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.GoPlugin;
 import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
@@ -40,8 +44,6 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
 
     public GoNotificationPlugin() {
         File pluginConfigFile = findGoNotifyConfigPath();
-
-
         /**
          * Scheduler to read config file
          * Configuration can change at runtime. Read in the new file.
@@ -49,23 +51,23 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if (pluginConfigFile.lastModified() != configLastModified) {
-                    if (configLastModified == 0L) {
-                        LOGGER.info("Loading configuration file");
-                    } else {
-                        LOGGER.info("Reloading configuration file since some modifications were found");
-                    }
-                    try {
-                        lock.writeLock().lock();
-                        configuration = ConfigReader.read(pluginConfigFile);
-                        pipelineListener = new MsTeamsPipelineListener(configuration);
-                    } catch (Exception e) {
-                        LOGGER.error(e.getMessage(), e);
-                    } finally {
-                        lock.writeLock().unlock();
-                    }
-                    configLastModified = pluginConfigFile.lastModified();
+            if (pluginConfigFile.lastModified() != configLastModified) {
+                if (configLastModified == 0L) {
+                    LOGGER.info("Loading configuration file");
+                } else {
+                    LOGGER.info("Reloading configuration file since some modifications were found");
                 }
+                try {
+                    lock.writeLock().lock();
+                    configuration = ConfigReader.read(pluginConfigFile);
+                    pipelineListener = new MsTeamsPipelineListener(configuration);
+                } catch (Exception e) {
+                    LOGGER.error(e.getMessage(), e);
+                } finally {
+                    lock.writeLock().unlock();
+                }
+                configLastModified = pluginConfigFile.lastModified();
+            }
             }
         }, 0, CONFIG_REFRESH_INTERVAL);
     }
@@ -81,14 +83,19 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
 
     public GoPluginApiResponse handle(GoPluginApiRequest goPluginApiRequest) {
         String requestName = goPluginApiRequest.requestName();
+
         if (requestName.equals("notifications-interested-in")) {
             return handleNotificationsInterestedIn();
+
         } else if (requestName.equals("stage-status")) {
             return handleStageNotification(goPluginApiRequest);
+
         } else if (requestName.equals("go.plugin-settings.get-view")) {
             return handleRequestGetView();
+
         } else if (requestName.equals("go.plugin-settings.validate-configuration")) {
             return handleValidateConfig(goPluginApiRequest.requestBody());
+
         } else if (requestName.equals("go.plugin-settings.get-configuration")) {
             return handleRequestGetConfiguration();
         }
@@ -135,18 +142,22 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
     }
 
     private GoPluginApiResponse handleStageNotification(GoPluginApiRequest goPluginApiRequest) {
-        GoNotificationMessage message = parseNotificationMessage(goPluginApiRequest);
+        //Get the Pipeline Info as part of notification
+        PipelineInfo pipelineInfo = parseNotificationMessage(goPluginApiRequest);
         int responseCode = 200;
 
         Map<String, Object> response = new HashMap<String, Object>();
         List<String> messages = new ArrayList<String>();
         try {
             response.put("status", "success");
-            LOGGER.info(message.fullyQualifiedJobName() + " has " + message.getStageState() + "/" + message.getStageResult());
+            LOGGER.info(pipelineInfo.fullyQualifiedJobName() + " has " + pipelineInfo.getStage().getName() + "/" + pipelineInfo.getStage().getResult());
+
+            //lock reading any other configuration
             lock.readLock().lock();
-            this.pipelineListener.notify(message);
+
+            this.pipelineListener.notify(pipelineInfo);
         } catch (Exception e) {
-            LOGGER.info(message.fullyQualifiedJobName() + " failed with error", e);
+            LOGGER.info(pipelineInfo.fullyQualifiedJobName() + " failed with error", e);
             responseCode = 500;
             response.put("status", "failure");
             if (!isEmpty(e.getMessage())) {
@@ -166,8 +177,8 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
         return str == null || str.trim().isEmpty();
     }
 
-    private GoNotificationMessage parseNotificationMessage(GoPluginApiRequest goPluginApiRequest) {
-        return new GsonBuilder().create().fromJson(goPluginApiRequest.requestBody(), GoNotificationMessage.class);
+    private PipelineInfo parseNotificationMessage(GoPluginApiRequest goPluginApiRequest) {
+        return new GsonBuilder().create().fromJson(goPluginApiRequest.requestBody(), PipelineInfo.class);
     }
 
     /**

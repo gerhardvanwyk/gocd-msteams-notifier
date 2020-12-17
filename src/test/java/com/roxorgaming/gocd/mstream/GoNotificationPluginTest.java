@@ -1,10 +1,10 @@
 package com.roxorgaming.gocd.mstream;
 
 
+import com.roxorgaming.gocd.GoNotificationPlugin;
 import com.roxorgaming.gocd.mstream.util.TestUtils;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
