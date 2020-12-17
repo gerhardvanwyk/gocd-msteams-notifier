@@ -17,20 +17,33 @@ You can find the details on where / how to setup environment variables for GoCD 
 Minimalistic configuration would be something like
 ```hocon
 gocd.msteams {
+
+  # MsTeams API 
+  api-msteams-host = "http://localhost:8153/"
+  msteams = [{
+    team = {id}
+    display-name = "GoCD Build Bot"
+    icon-url ="http://iconlib.com/brokonbuild"
+    channel = ["{id1}", "{id2}", ... ]
+    pipelines = [{
+        name = {Regex}
+        stage = {Regex}
+        group = {Regex}
+        statuses = [Broken, Failed...]
+    }]
+  }]
+
+  # GoCD Server 
   login = "someuser"
   password = "somepassword"
   api-token = "a-valid-token-from-gocd-goCdClient"
   goCdClient-host = "http://localhost:8153/"
-  api-goCdClient-host = "http://localhost:8153/"
-  webhookUrls = ["https://hooks.slack.com/services/1/...", "https://hooks.slack.com/services/2/..." ]
-
+  
   # optional fields
-  channel = "#build"
-  msteamsTitleName = "gocd-MsTeams-bot"
-  activityImage = "http://example.com/slack-bot.png"
   display-console-log-links = true
-  displayMaterialChanges = true
+  display-material-changes = true
   process-all-configuration = true
+  trancate-change = true
   proxy {
     hostname = "localhost"
     port = "5555"
@@ -57,18 +70,15 @@ gocd.msteams {
 ## Pipeline Rules
 By default the plugin pushes a note about all failed stages across all pipelines to Slack. You have fine grain control over this operation.
 ```hocon
-gocd.slack {
+gocd.msteams {
   goCdClient-host = "http://localhost:8153/"
   webhookUrl = "https://hooks.slack.com/services/...."
 
   pipelines = [{
-    name = "gocd-slack-build"
-    stage = "build"
-    group = ".*"
-    state = "failed|passed"
-    channel = "#oss-build-group"
-    owners = ["ashwanthkumar"]
-    webhookUrl = "https://hooks.slack.com/services/another-team-hook-id..."
+        name = ".*"
+        stage = ".*"
+        group = ".*"
+        statuses = "broken"
   },
   {
     name = ".*"
@@ -82,9 +92,6 @@ gocd.slack {
 - `stage` - Regex to match the stage name
 - `group` - Regex to match the pipeline group name
 - `state` - State of the pipeline at which we should send a notification. You can provide multiple values separated by pipe (`|`) symbol. Valid values are passed, failed, cancelled, building, fixed, broken or all.
-- `channel` - (Optional) channel where we should send the slack notification. This setting for a rule overrides the global setting
-- `owners` - (Optional) list of slack user handles who must be tagged in the message upon notifications
-- `webhookUrl` - (Optional) Use this webhook url instead of the global one. Useful if you're using multiple slack teams.
 
 ## Configuring the plugin for GoCD on Kubernetes using Helm
 

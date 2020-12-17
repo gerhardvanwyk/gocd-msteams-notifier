@@ -85,55 +85,6 @@ public class GoNotificationMessageTest {
         );
     }
 
-    @Test
-    @Disabled
-    public void shouldFetchChanges() throws Exception {
-        GoCdClient goCdClient = mock(GoCdClient.class);
-
-        Pipeline pipeline1 = new Pipeline();
-        {
-            pipeline1.setBuildCause(new BuildCause());
-
-            MaterialRevision leafRevision = new MaterialRevision();
-            leafRevision.setMaterial( new Material("Something", 1338, true));
-
-            MaterialRevision pipelineRevision = new MaterialRevision();
-            pipelineRevision.setMaterial(new Material());
-            pipelineRevision.getMaterial().setType("Pipeline");
-            pipelineRevision.setChanged(true);
-
-            Modification modification = new Modification();
-            modification.setRevision("pipeline2/11/foo");
-
-            pipelineRevision.addModifications(Lists.of(modification));
-            pipeline1.getBuildCause().setMaterialRevisions(new MaterialRevision[]{
-                    leafRevision, pipelineRevision
-            });
-        }
-        Pipeline pipeline2 = new Pipeline();
-        {
-            pipeline2.setBuildCause( new BuildCause() );
-
-            MaterialRevision leafRevision = new MaterialRevision();
-            leafRevision.setMaterial(new Material( "Something other", 1337, true));
-
-            pipeline2.getBuildCause().setMaterialRevisions( new MaterialRevision[]{
-                    leafRevision
-            });
-        }
-        when(goCdClient.getPipelineInstance("pipeline1", 10)).thenReturn(pipeline1);
-        when(goCdClient.getPipelineInstance("pipeline2", 11)).thenReturn(pipeline2);
-
-        GoNotificationMessage message = new GoNotificationMessage(
-                TestUtils.createMockServerFactory(goCdClient),
-                info("pipeline1", 10)
-        );
-
-        List<MaterialRevision> revisions = message.fetchChanges(new Configuration());
-
-        assertThat(revisions.size(), is(2));
-    }
-
     private static Pipeline pipeline(String name, int counter) {
         Pipeline pipeline = new Pipeline(name, counter, null);
         return pipeline;

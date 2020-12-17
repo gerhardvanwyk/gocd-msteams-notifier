@@ -27,6 +27,8 @@ public class PipelineInfo {
 
     @Override
     public String toString() {
-        return name + "/" + counter + "/" + stage.getName() + "/" + stage.getResult();
+        String stg = (stage == null) ? "" : stage.getName();
+        String rsl = (stage == null) ? "" : stage.getResult();
+        return name + "/" + counter + "/" + stg + "/" + rsl;
     }
 }

@@ -34,7 +34,7 @@ public class Message {
         this.status = status;
         try {
             this.details = message.fetchDetails(configuration);
-        } catch (URISyntaxException | IOException | GoNotificationMessage.BuildDetailsNotFoundException e) {
+        } catch (IOException | GoNotificationMessage.BuildDetailsNotFoundException e) {
             throw new RuntimeException("Could not fetch message details", e);
         }
         this.stage = pickCurrentStage(details.getStages(), message);
@@ -83,7 +83,7 @@ public class Message {
     }
 
     private void rootConfigDetails(StringBuffer buffer) throws URISyntaxException, IOException {
-        if (configuration.getDisplayMaterialChanges()) {
+        if (configuration.isDisplayMaterialChanges()) {
 
             List<MaterialRevision> changes = message.fetchChanges(configuration);
             for (MaterialRevision change : changes) {

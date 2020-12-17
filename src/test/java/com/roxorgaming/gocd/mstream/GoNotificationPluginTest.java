@@ -22,7 +22,10 @@ public class GoNotificationPluginTest {
     public static final String USER_HOME = "user.home";
 
     public static final String NOTIFICATION_INTEREST_RESPONSE = "{\"notifications\":[\"stage-status\"]}";
-    public static final String GET_CONFIGURATION_RESPONSE = "{\"pipelineConfig\":{\"display-name\":\"Pipeline Notification Rules\",\"secure\":false,\"display-order\":\"2\",\"required\":true,\"display-value\":\"\"},\"server-url-external\":{\"display-name\":\"External GoCD Server URL\",\"secure\":false,\"display-order\":\"1\",\"required\":true,\"display-value\":\"\"}}";
+    public static final String GET_CONFIGURATION_RESPONSE = "{\"pipelineConfig\":{\"display-value\":\"\"," +
+            "\"display-order\":\"2\",\"display-name\":\"Pipeline Notification Rules\",\"secure\":false," +
+            "\"required\":true},\"server-url-external\":{\"display-value\":\"\",\"display-order\":\"1\"," +
+            "\"display-name\":\"External GoCD Server URL\",\"secure\":false,\"required\":true}}";
     private static final String GET_CONFIG_VALIDATION_RESPONSE = "[]";
 
     @Test
@@ -41,7 +44,6 @@ public class GoNotificationPluginTest {
     }
 
     @Test
-    @Disabled
     public void canHandleConfigurationRequest() {
         GoNotificationPlugin plugin = createGoNotificationPluginFromConfigAtHomeDir();
 
@@ -107,7 +109,7 @@ public class GoNotificationPluginTest {
     }
 
     public GoNotificationPlugin createGoNotificationPluginFromConfigAtHomeDir() {
-        String folder = TestUtils.getResourceDirectory("configs/go_notify.conf");
+        String folder = TestUtils.getResourceDirectory("configs/basic.conf");
 
         String oldUserHome = System.getProperty(USER_HOME);
         System.setProperty(USER_HOME, folder);
@@ -120,7 +122,7 @@ public class GoNotificationPluginTest {
     }
 
     public GoNotificationPlugin createGoNotificationPluginFromConfigAtEnvironmentVariableLocation(String envVariable) {
-        String folder = TestUtils.getResourceDirectory("configs/go_notify.conf");
+        String folder = TestUtils.getResourceDirectory("configs/basic.conf");
         GoEnvironment goEnvironment = new GoEnvironment().setEnv(envVariable, folder + File.separator + "reference.conf");
         return new GoNotificationPlugin(goEnvironment);
     }

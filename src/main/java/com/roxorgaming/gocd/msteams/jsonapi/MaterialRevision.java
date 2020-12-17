@@ -3,6 +3,8 @@ package com.roxorgaming.gocd.msteams.jsonapi;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 import com.thoughtworks.go.plugin.api.logging.Logger;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +16,7 @@ import java.util.regex.Pattern;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class MaterialRevision {
 
     static private final Pattern PIPELINE_REVISION_PATTERN =

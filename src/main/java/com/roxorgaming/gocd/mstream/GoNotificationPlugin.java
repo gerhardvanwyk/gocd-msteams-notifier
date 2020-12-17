@@ -32,6 +32,7 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private GoEnvironment environment = new GoEnvironment();
     private Configuration configuration;
+    private PipelineListener pipelineListener;
 
     private final Timer timer = new Timer();
     private long configLastModified = 0L;
@@ -39,6 +40,8 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
 
     public GoNotificationPlugin() {
         File pluginConfigFile = findGoNotifyConfigPath();
+
+
         /**
          * Scheduler to read config file
          * Configuration can change at runtime. Read in the new file.
@@ -55,6 +58,7 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
                     try {
                         lock.writeLock().lock();
                         configuration = ConfigReader.read(pluginConfigFile);
+                        pipelineListener = new MsTeamsPipelineListener(configuration);
                     } catch (Exception e) {
                         LOGGER.error(e.getMessage(), e);
                     } finally {
@@ -140,7 +144,7 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
             response.put("status", "success");
             LOGGER.info(message.fullyQualifiedJobName() + " has " + message.getStageState() + "/" + message.getStageResult());
             lock.readLock().lock();
-            configuration.getPipelineListener().notify(message);
+            this.pipelineListener.notify(message);
         } catch (Exception e) {
             LOGGER.info(message.fullyQualifiedJobName() + " failed with error", e);
             responseCode = 500;

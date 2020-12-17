@@ -2,11 +2,15 @@ package com.roxorgaming.gocd.msteams.jsonapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Modification extends MaterialRevision {
 
     @SerializedName("id")

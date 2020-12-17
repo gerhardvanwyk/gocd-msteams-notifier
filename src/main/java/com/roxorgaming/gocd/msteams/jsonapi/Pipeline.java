@@ -1,6 +1,8 @@
 package com.roxorgaming.gocd.msteams.jsonapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -8,8 +10,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Builder
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Pipeline  {
 
     @JsonProperty("build_cause")
@@ -47,10 +51,6 @@ public class Pipeline  {
         this.counter = counter;
         this.stages = stages;
     }
-
-    // "comment"
-    // "natural_order"
-    // "stages"
 
     /**
      * Collect all changed MaterialRevision objects, walking changed

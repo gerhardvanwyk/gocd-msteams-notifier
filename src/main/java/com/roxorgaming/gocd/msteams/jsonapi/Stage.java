@@ -4,13 +4,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 import in.ashwanthkumar.utils.collections.Lists;
 import in.ashwanthkumar.utils.func.Function;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Builder
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Stage extends Job {
     @JsonProperty("id")
     private int id;
@@ -52,11 +56,6 @@ public class Stage extends Job {
     }
 
     public List<String> jobNames() {
-        return Lists.map(Lists.of(jobs), new Function<Job, String>() {
-            @Override
-            public String apply(Job input) {
-                return input.getName();
-            }
-        });
+        return Lists.map(Lists.of(jobs), input -> input.getName());
     }
 }

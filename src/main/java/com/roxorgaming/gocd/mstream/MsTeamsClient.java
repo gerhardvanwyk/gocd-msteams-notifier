@@ -9,11 +9,11 @@ import com.roxorgaming.gocd.msteams.jsonapi.Message;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Set;
+import java.util.List;
 
 public class MsTeamsClient {
 
-    public MsTeamsClient push(Message message, Set<String> channels) {
+    public MsTeamsClient push(Message message, List<String> channels) {
 
         IGraphServiceClient graphClient = GraphServiceClient.builder().authenticationProvider(null).buildClient();
 

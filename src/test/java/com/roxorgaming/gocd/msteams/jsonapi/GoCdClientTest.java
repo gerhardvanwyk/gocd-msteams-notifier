@@ -6,6 +6,7 @@ import org.junit.jupiter.api.*;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
@@ -203,29 +204,34 @@ public class GoCdClientTest {
     @Test
     public void testHistoryUrl()  {
 
-        Configuration configuration = new Configuration("https://example.org");
+        Configuration configuration = Configuration.builder()
+                .goServerHost("http://localhost").build();
         GoCdClient goCdClient = new GoCdClient(configuration);
         URL url = goCdClient.historyUrl("test-pipeline");
-        Assertions.assertEquals(443, url.getDefaultPort());
-        Assertions.assertEquals("example.org", url.getHost());
-        Assertions.assertEquals("https://example.org/go/api/pipelines/test-pipeline/history", url.toExternalForm());
+        Assertions.assertEquals(80, url.getDefaultPort());
+        Assertions.assertEquals("localhost", url.getHost());
+        Assertions.assertEquals("http://localhost/go/api/pipelines/test-pipeline/history", url.toExternalForm());
 
     }
 
     @Test
     public void testHistoryMapper() throws IOException {
-        Configuration configuration = new Configuration("https://example.org/");
+        Configuration configuration = Configuration.builder()
+                .goServerHost("http://localhost").build();
         GoCdClient cdClient = new GoCdClient(configuration);
         HttpURLConnection connection = mock(HttpURLConnection.class);
         when(connection.getContent()).thenReturn(historyJson);
         History history = cdClient.getPipeline(new URL("https://example.org/go/api/pipelines/test-pipeline/history"),
                 History.class, connection );
-        //assertEquals(0, history.size() );
+        Assertions.assertEquals("pipeline1/11/stage1/Failed", history.getPipelines().get(0).toString());
+        Assertions.assertEquals("pipeline1/10/stage1/Passed", history.getPipelines().get(1).toString());
     }
 
     @Test
     public void testPipelineUrl() {
-        Configuration configuration = new Configuration("https://example.org");
+        Configuration configuration = Configuration.builder()
+                .goServerHost("https://example.org").build();
+
         GoCdClient goCdClient = new GoCdClient(configuration);
         URL url = goCdClient.pipelineUrl("pipeline23", 41);
         Assertions.assertEquals("https://example.org/go/api/pipelines/pipeline23/41", url.toExternalForm());
@@ -233,7 +239,7 @@ public class GoCdClientTest {
 
     @Test
     public void testPipelineMapper() throws IOException {
-        Configuration configuration = new Configuration("https://example.org/");
+        Configuration configuration = new Configuration();
         GoCdClient cdClient = new GoCdClient(configuration);
         HttpURLConnection connection = mock(HttpURLConnection.class);
         when(connection.getContent()).thenReturn(pipeline);

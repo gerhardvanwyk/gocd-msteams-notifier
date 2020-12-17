@@ -101,8 +101,9 @@ public class GoCdClient {
 
     URL historyUrl(String pipelineName){
         try {
-           return new URL(String.format("%s/go/api/pipelines/%s/history",
-                    mConfiguration.getGoAPIServerHost(), pipelineName));
+            String url = String.format("%s/go/api/pipelines/%s/history",
+                    mConfiguration.getGoServerHost(), pipelineName);
+           return new URL(url);
         } catch (MalformedURLException e) {
             throw new RuntimeException("Could not create URL for " + pipelineName, e);
         }
@@ -110,8 +111,9 @@ public class GoCdClient {
 
     URL pipelineUrl(String pipelineName, int pipelineCounter){
         try {
-            return new URL(String.format("%s/go/api/pipelines/%s/%d",
-                    mConfiguration.getGoAPIServerHost(), pipelineName, pipelineCounter));
+            String url = String.format("%s/go/api/pipelines/%s/%d",
+                    mConfiguration.getGoServerHost(), pipelineName, pipelineCounter);
+            return new URL(url);
         } catch (MalformedURLException e) {
             throw new RuntimeException("Could not create URL for " + pipelineName, e);
         }

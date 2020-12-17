@@ -170,7 +170,7 @@ public class GoNotificationMessage {
             pipeline.getStage().setResult( "Broken");
     }
 
-    public Pipeline fetchDetails(Configuration configuration) throws URISyntaxException, IOException, BuildDetailsNotFoundException
+    public Pipeline fetchDetails(Configuration configuration) throws IOException, BuildDetailsNotFoundException
     {
         return fetchDetailsForBuild(configuration, Integer.parseInt(getPipelineCounter()));
     }

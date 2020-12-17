@@ -8,7 +8,7 @@ import com.roxorgaming.gocd.mstream.configuration.PipelineConfig;
 
 import java.util.List;
 
-abstract public class PipelineListener extends Configuration {
+abstract public class PipelineListener {
 
     private Logger LOG = Logger.getLoggerFor(PipelineListener.class);
 
@@ -27,9 +27,9 @@ abstract public class PipelineListener extends Configuration {
             for (PipelineConfig pipelineConfig : foundRules) {
                 LOG.debug(String.format("Matching rule is %s", pipelineConfig));
                 handlePipelineStatus(pipelineConfig, PipelineStatus.valueOf(message.getStageResult().toUpperCase()), message);
-                if (! configuration.getProcessAllRules()) {
-                    break;
-                }
+//                if (! configuration.getProcessAllRules()) {
+//                    break;
+//                }
             }
         } else {
             LOG.warn(String.format("Couldn't find any matching rule for %s/%s with status=%s", message.getPipelineName(),

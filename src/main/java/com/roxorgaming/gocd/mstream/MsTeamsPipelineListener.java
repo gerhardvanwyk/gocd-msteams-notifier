@@ -23,7 +23,7 @@ public class MsTeamsPipelineListener extends PipelineListener {
      */
     private void onMessage(final PipelineConfig rule, final GoNotificationMessage message, final PipelineStatus status){
         Message msg = new Message(configuration, status, message );
-        this.msTeamsClient.push(msg, rule.getChannel() );
+     //   this.msTeamsClient.push(msg, rule.getChannel() );
     }
 
     @Override

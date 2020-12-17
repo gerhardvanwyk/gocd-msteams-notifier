@@ -24,7 +24,7 @@ public class ConfigReader {
     protected Configuration load(Config config) {
         Config envThenSystem = ConfigFactory.systemEnvironment().withFallback(ConfigFactory.systemProperties());
         Config configWithFallback = config.withFallback(ConfigFactory.load(getClass().getClassLoader())).resolveWith(envThenSystem);
-        return Configuration.fromConfig(configWithFallback.getConfig("gocd.msteams"));
+        return new Configuration(configWithFallback.getConfig("gocd.msteams"));
     }
 
     public Configuration load() {
