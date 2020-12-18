@@ -41,10 +41,6 @@ public class Message {
         this.status = status;
         this.details = details;
         this.changes = changes;
-//        try {
-//        } catch (IOException | GoNotificationService.BuildDetailsNotFoundException e) {
-//            throw new RuntimeException("Could not fetch message details", e);
-//        }
         this.stage = pickCurrentStage(details.getStages(), pipelineInfo.getStage().getName(), details.getName());
         this.title = String.format("Stage [%s] %s %s", pipelineInfo.fullyQualifiedJobName(), verbFor(status),
                 status).replaceAll("\\s+", " ");
