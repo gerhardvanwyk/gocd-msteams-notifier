@@ -1,0 +1,17 @@
+@startuml
+
+package "GoCD" {
+GoCD_API - [GoCD Server]
+[GoCD Server] --> Plugin_Interface
+[MsTeams Notification Plugin] --> GoCD_API : read's history
+[MsTeams Notification Plugin] ..> Plugin_Interface : implements
+}
+
+package "Microsoft" {
+Auth_API - [OpenIdConnect]
+[MsTeams Notification Plugin] --> Auth_API : authenticate
+[MsTeams] --> MsTeams_API
+[MsTeams Notification Plugin] --> MsTeams_API : sends notification
+}
+
+@enduml

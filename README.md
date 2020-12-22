@@ -1,9 +1,28 @@
-[![Build Status](https://travis-ci.org/ashwanthkumar/gocd-slack-build-notifier.svg?branch=master)](https://travis-ci.org/ashwanthkumar/gocd-slack-build-notifier)
-# gocd-slack-build-notifier
-MsTeams based GoCD build notifier - Under construction
+# gocd-slack-build-notifier (Under construction)
+MsTeams based GoCD build notifier -  Used [ashwanthkumar/gocd-slack-build-notifier](https://github.com/ashwanthkumar/gocd-slack-build-notifier) as reference.
+
+There is a plant.uml diagram with the [Design plugin.png](Plugin.png.)
+
+* The notification plugin implements a GoPlugin.class and are placed in /plugins/external (GoCD server Classpath)
+* During server startup the plugin is registerd with the server
+* The server then start to send notification to the plugin depending on the plugins' configuration
+* The default configuration is done via file, as below
+* Configuration can also be changed via the frontend. 
+* When a notification is received the plugin will fetch more information from the GoCD API (Pipeline History)
+* This information is parsed depending on the configuration, (For Example. Trigger)
+* The plugin the creates a message to send to MsTeams (Teams and channels are configured)
+* The plugin fetch a Bearer Token from MS openID server
+* The plugin then send the notification to the teams
 
 ## Setup
-Download jar from [releases](https://github.com/ashwanthkumar/gocd-slack-build-notifier/releases) & place it in /plugins/external & restart Go Server.
+Build the jar & place it in /plugins/external & restart Go Server.
+
+## Testing
+Build the docker image. It will place the created jar in the correct folder. Run Docker with
+```shell
+-d -p8153:8153 -p8154:8154
+```
+It downloads and run GoCD 17.11.0
 
 ## Configuration
 All configurations are in [HOCON](https://github.com/typesafehub/config) format. Plugin searches for the configuration file in the following order
@@ -24,7 +43,7 @@ gocd.msteams {
     team = {id}
     display-name = "GoCD Build Bot"
     icon-url ="http://iconlib.com/brokonbuild"
-    channel = ["{id1}", "{id2}", ... ]
+    channel = ["{channelId1}", "{channelId2}", ... ]
     pipelines = [{
         name = {Regex}
         stage = {Regex}
@@ -51,13 +70,23 @@ gocd.msteams {
   }
 }
 ```
+- `api-msteams-host` - The host URL of the MsTeams API
+- `MS Teams` - List. Setup per Team on the MsTeams application
+  - `team` - Team's id
+  - `display-name` - Display name on top of the notification
+  - `icon-url` - Icon displayed with the notification
+  - `channel` - List of channel Ids 
+  - `pipelines` - List of Pipeline configuration objects 
+    - `group` - Regular expression for group names
+    - `name` - Regular expression for pipeline names
+    - `stage` - Regular expression for stage names
+    - `statuses` - List of pipeline status to display the notification for. Valid values are passed, failed, cancelled, building, fixed, broken or all.
 - `login` - Login for a Go user who is authorized to access the REST API.
 - `password` - Password for the user specified above. You might want to create a less privileged user for this plugin.
-- `api-token` - Valid GoCD access token. Available starting from v19.2.0 (https://api.gocd.org/current/#bearer-token-authentication). If both login/password and api-token are present, api-token takes precedence.
+- `*api-token` - (ignore)Valid GoCD access token. Available starting from v19.2.0 (https://api.gocd.org/current/#bearer-token-authentication). If both login/password and api-token are present, api-token takes precedence.
 - `goCdClient-host` - FQDN of the Go Server. All links on the slack channel will be relative to this host.
-- `api-goCdClient-host` - This is an optional attribute. Set this field to localhost so goCdClient will use this endpoint to get `PipelineHistory` and `PipelineInstance`  
-- `webhookUrl` - Slack Webhook URL
-- `channel` - Override the default channel where we should send the notifications in slack. You can also give a value starting with `@` to send it to any specific user.
+
+Optional
 - `display-console-log-links` - Display console log links in the notification. Defaults to true, set to false if you want to hide.
 - `displayMaterialChanges` - Display material changes in the notification (git revisions for example). Defaults to true, set to false if you want to hide.
 - `process-all-configuration` - If true, all matching configuration are applied instead of just the first.
@@ -66,33 +95,7 @@ gocd.msteams {
   - `proxy.hostname` - Proxy Host
   - `proxy.port` - Proxy Port
   - `proxy.type` - `socks` or `http` are the only accepted values.
-
-## Pipeline Rules
-By default the plugin pushes a note about all failed stages across all pipelines to Slack. You have fine grain control over this operation.
-```hocon
-gocd.msteams {
-  goCdClient-host = "http://localhost:8153/"
-  webhookUrl = "https://hooks.slack.com/services/...."
-
-  pipelines = [{
-        name = ".*"
-        stage = ".*"
-        group = ".*"
-        statuses = "broken"
-  },
-  {
-    name = ".*"
-    stage = ".*"
-    state = "failed"
-  }]
-}
-```
-`gocd.slack.pipelines` contains all the configuration for the go-goCdClient. It is a list of configuration (see below for what the parameters mean) for various pipelines. The plugin will pick the first matching pipeline rule from the pipelines collection above, so your most specific rule should be first, with the most generic rule at the bottom. Alternatively, set the `process-all-configuration` option to `true` and all matching configuration will be applied.
-- `name` - Regex to match the pipeline name
-- `stage` - Regex to match the stage name
-- `group` - Regex to match the pipeline group name
-- `state` - State of the pipeline at which we should send a notification. You can provide multiple values separated by pipe (`|`) symbol. Valid values are passed, failed, cancelled, building, fixed, broken or all.
-
+  
 ## Configuring the plugin for GoCD on Kubernetes using Helm
 
 ### Creating a Kubernetes secret to store the config file
@@ -144,11 +147,6 @@ persistence:
 ```
 - If you want to use a custom config location by specifying `GO_NOTIFY_CONF`, then you can use the above `mountPath`. If not, change the `mountPath` to `/var/go` as it is the default `go` user's home directory.
 - Then applying the local values.yaml that has these values added to it will result in a new Go Server pod being created that has the plugin installed and running.
-
-
-## Screenshots
-<img src="https://raw.githubusercontent.com/ashwanthkumar/gocd-slack-build-notifier/master/images/gocd-slack-notifier-demo-with-changes.png" width="400"/>
-<img src="https://raw.githubusercontent.com/ashwanthkumar/gocd-slack-build-notifier/master/images/gocd-slack-notifier-demo.png" width="400"/>
 
 ## License
 [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
