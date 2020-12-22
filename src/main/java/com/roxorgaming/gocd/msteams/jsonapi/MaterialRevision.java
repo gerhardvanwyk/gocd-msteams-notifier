@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -34,6 +35,11 @@ public class MaterialRevision {
 
     @JsonProperty("modifications")
     private List<Modification> modifications;
+
+    public MaterialRevision(boolean changed, List<Modification> modifications) {
+        this.changed = changed;
+        this.modifications = modifications;
+    }
 
     public void addModification(Modification modification){
         if(this.modifications == null){

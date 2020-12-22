@@ -23,7 +23,7 @@ public class MsTeamsPipelineListener extends PipelineListener {
                           final List<MaterialRevision> changes){
         for(PipelineStatus status: config.getPipelineStatus()) {
             Message msg = new Message(configuration, details, pipelineInfo, status, changes);
-            //   this.msTeamsClient.push(msg, rule.getChannel() );
+            this.msTeamsClient.push(msg, configuration );
         }
     }
 

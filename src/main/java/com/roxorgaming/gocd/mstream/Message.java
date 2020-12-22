@@ -59,6 +59,23 @@ public class Message {
 
         getStyleColor(buffer);
 
+        buffer.append("<div><h1>").append(title).append("</h1></div>");
+        buffer.append("<p>").append("</p>");
+
+        int rc = 1;
+        buffer.append("<div>").append("<h3>").append("Revisions").append("</h3></div>");
+        for(MaterialRevision revision: changes){
+            buffer.append("<div><h4>").append(" Revision ").append(rc++).append("</h4></div>");
+            buffer.append("Pipeline: ").append(revision.isPipeline()).append("</div>");
+            for(Modification md: revision.getModifications()){
+                buffer.append("<div>").append("Revision: ").append(md.getRevision()).append("</div>");
+                buffer.append("<div>").append("Comment: ").append(md.getComment()).append("</div>");
+                buffer.append("<div>").append("Username: ").append(md.getUserName()).append("</div>");
+                buffer.append("<div>").append("Email: ").append(md.getEmail()).append("</div>");
+                buffer.append("<p>").append("</p>");
+            }
+        }
+
         buffer.append("<div>Triggered by: ").append(stage.getApprovedBy()).append("</div>\n" +
                 "    <div>Reason: ");
 
@@ -67,17 +84,25 @@ public class Message {
         else
             buffer.append(details.getBuildCause().getTriggerMessage());
 
+        buffer.append("<p>").append("</p");
+
         buffer.append("</div>" +
                 "<div>Label: ").append(details.getLabel())
                 .append("</div>");
 
         // Describe the root changes that made up this build.
-        rootConfigDetails(buffer);
+      //  rootConfigDetails(buffer);
+
+        //Console Logs
+        buffer.append("<h4>").append("<div>Console Logs: ").append("</div>").append("</h4>").append("<p>");
 
         List<String> consoleLogLinks = createConsoleLogLinks(configuration.getGoServerHost(), details, stage, status);
         if (!consoleLogLinks.isEmpty()) {
-            String logLinks = Lists.mkString(consoleLogLinks, "", "", "\n");
-            buffer.append("<div>Console Logs: ").append(logLinks).append("</div>");
+            for(String links: consoleLogLinks){
+                buffer.append("<div>").append(links).append("</div>").append('\n');
+            }
+          //  String logLinks = Lists.mkString(consoleLogLinks, "", "", "\n");
+
         }
         buffer.append("</p></body>\n" +
                 "</html>");
@@ -117,7 +142,7 @@ public class Message {
                 }
                 String fieldNamePrefix = (isTruncated) ? String.format("Latest %d", 5) : "All";
                 String fieldName = String.format("%s changes for %s", fieldNamePrefix, change.getMaterial().getDescription());
-                buffer.append("<div>").append(fieldName).append(": ").append(sb.toString()).append("</div");
+                buffer.append("<div>").append(fieldName).append(": ").append(sb.toString()).append("</div>");
             }
 
         }
@@ -128,14 +153,17 @@ public class Message {
             case FAILED:
             case BROKEN:{
                 buffer.append("<p style=\"background-color:Red;\">");
+                break;
             }
             case PASSED:
             case FIXED:{
                 buffer.append("<p style=\"background-color:Green;\">");
+                break;
             }
             case CANCELLED:
             case BUILDING:{
                 buffer.append("<p style=\"background-color:Orange;\">");
+                break;
             }
             default:
                 //do nothing
@@ -157,7 +185,7 @@ public class Message {
                         pipeline.getCounter(), stage.getName(), stage.getCounter(), job));
             }
             // TODO - May be it's only useful to show the failed job logs instead of all jobs?
-            consoleLinks.add("<" + link.normalize().toASCIIString() + "| View " + job + " logs>");
+            consoleLinks.add("<a href=" + link.normalize().toASCIIString() + ">" + "| View " + job + " logs </a>");
         }
         return consoleLinks;
     }

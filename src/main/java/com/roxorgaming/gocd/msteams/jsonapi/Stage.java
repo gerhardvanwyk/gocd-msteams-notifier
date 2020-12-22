@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Builder
+@Builder(builderMethodName = "buildIt")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
