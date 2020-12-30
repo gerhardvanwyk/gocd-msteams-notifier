@@ -1,14 +1,13 @@
 package com.roxorgaming.gocd;
 
-import com.google.gson.GsonBuilder;
 import com.roxorgaming.gocd.msteams.jsonapi.GoCdClient;
 import com.roxorgaming.gocd.mstream.GoEnvironment;
 import com.roxorgaming.gocd.mstream.MsTeamsPipelineListener;
 import com.roxorgaming.gocd.mstream.PipelineListener;
 import com.roxorgaming.gocd.mstream.base.AbstractNotificationPlugin;
-import com.roxorgaming.gocd.mstream.configuration.Configuration;
+import com.roxorgaming.gocd.mstream.base.Utils;
 import com.roxorgaming.gocd.mstream.configuration.ConfigReader;
-import com.roxorgaming.gocd.mstream.notification.GoNotificationService;
+import com.roxorgaming.gocd.mstream.configuration.Configuration;
 import com.roxorgaming.gocd.mstream.notification.PipelineInfo;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.GoPlugin;
@@ -180,7 +179,7 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
     }
 
     private PipelineInfo parseNotificationMessage(GoPluginApiRequest goPluginApiRequest) {
-        return new GsonBuilder().create().fromJson(goPluginApiRequest.requestBody(), PipelineInfo.class);
+        return Utils.getMapper().convertValue(goPluginApiRequest.requestBody(), PipelineInfo.class);
     }
 
     /**

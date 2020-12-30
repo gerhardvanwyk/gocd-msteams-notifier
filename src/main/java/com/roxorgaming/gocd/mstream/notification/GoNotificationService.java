@@ -1,7 +1,6 @@
 package com.roxorgaming.gocd.mstream.notification;
 
 import com.roxorgaming.gocd.msteams.jsonapi.*;
-import com.roxorgaming.gocd.mstream.configuration.Configuration;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import in.ashwanthkumar.utils.lang.StringUtils;
 

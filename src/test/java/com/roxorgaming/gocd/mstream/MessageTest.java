@@ -74,7 +74,7 @@ public class MessageTest {
         List<String> channels = new ArrayList<>();
         channels.add("147-987-258");
         channels.add("963-852-147");
-        config1.setChannels(channels);
+        config1.setChannelWebhooks(channels);
         config1.setPipelineConfig(pipelineConfig());
 
         MsTeamsConfig config2 = new MsTeamsConfig();
@@ -84,7 +84,7 @@ public class MessageTest {
         List<String> channels1 = new ArrayList<>();
         channels1.add("147-987-789");
         channels1.add("123-8547-147");
-        config2.setChannels(channels);
+        config2.setChannelWebhooks(channels);
         config2.setPipelineConfig(pipelineConfig());
 
         List<MsTeamsConfig> msTeamsConfigList = new ArrayList<>();

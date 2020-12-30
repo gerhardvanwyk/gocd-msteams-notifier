@@ -1,9 +1,7 @@
 package com.roxorgaming.gocd.msteams.jsonapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.gson.annotations.SerializedName;
 import in.ashwanthkumar.utils.collections.Lists;
-import in.ashwanthkumar.utils.func.Function;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

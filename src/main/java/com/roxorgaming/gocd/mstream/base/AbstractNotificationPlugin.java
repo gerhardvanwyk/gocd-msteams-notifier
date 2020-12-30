@@ -1,13 +1,13 @@
 package com.roxorgaming.gocd.mstream.base;
 
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
 import java.util.HashMap;
 import java.util.Map;
 
-abstract public class AbstractNotificationPlugin {
+public class AbstractNotificationPlugin {
 
     /**
      * Create a configuration field for the plugin.
@@ -30,7 +30,12 @@ abstract public class AbstractNotificationPlugin {
     }
 
     protected GoPluginApiResponse renderJSON(final int responseCode, final Object response) {
-        final String json = response == null ? null : new GsonBuilder().disableHtmlEscaping().create().toJson(response);
+        String json = null;
+        try {
+            json = response == null ? null : Utils.getMapper().writeValueAsString(response);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
         DefaultGoPluginApiResponse pluginApiResponse = new DefaultGoPluginApiResponse(responseCode);
         pluginApiResponse.setResponseBody(json);
         return pluginApiResponse;

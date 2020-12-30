@@ -1,7 +1,6 @@
 package com.roxorgaming.gocd.mstream;
 
 import com.roxorgaming.gocd.msteams.jsonapi.GoCdClient;
-import com.roxorgaming.gocd.msteams.jsonapi.History;
 import com.roxorgaming.gocd.msteams.jsonapi.MaterialRevision;
 import com.roxorgaming.gocd.msteams.jsonapi.Pipeline;
 import com.roxorgaming.gocd.mstream.configuration.PipelineConfig;
@@ -23,7 +22,7 @@ public class MsTeamsPipelineListener extends PipelineListener {
                           final List<MaterialRevision> changes){
         for(PipelineStatus status: config.getPipelineStatus()) {
             Message msg = new Message(configuration, details, pipelineInfo, status, changes);
-            this.msTeamsClient.push(msg, configuration );
+            this.msTeamsClient.push(msg );
         }
     }
 
