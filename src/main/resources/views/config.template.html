@@ -5,113 +5,197 @@
 
 <fieldset>
     <div class="form_item_block">
-        <table id="pipeline-configurations">
-            <thead>
-            <tr>
-                <th>&nbsp;</th>
-                <th><h4 class="src"> Pipeline | Stage | Job </h4></th>
-                <th><h4 class="dest"> Channels [webhook URL] ( | Separated list) </h4></th>
-            </tr>
-            </thead>
+        <!--        <table id="pipeline-configurations">-->
+        <!--            <thead>-->
+        <!--            <tr>-->
+        <!--                <th>&nbsp;</th>-->
+        <!--                <th><h4 class="src"> Pipeline | Stage | Job </h4></th>-->
+        <!--                <th><h4 class="dest"> Channels [webhook URL] ( | Separated list) </h4></th>-->
+        <!--            </tr>-->
+        <!--            </thead>-->
 
-            <tbody class="artifact" ng-init>
-            <tr ng-repeat="pipeline in pipelines" style="margin-bottom: 15px; margin-top: 10px;">
-                <td>
-                    <span class="icon_remove delete_parent" ng-click="removeSource($index)"></span>
-                </td>
-                <td class="name_value_cell">
-                    <input class="slack-pipelines-autocomplete slack-plugin-input" type="text"
-                           ng-model="pipeline.pipelineStageJob" tabindex=1
-                           ng-minlength="3"
-                           ng-required="true"/>
-                </td>
-                <td class="name_value_cell">
-                    <input class="slack-pipeline-channel slack-plugin-input" type="text" ng-model="pipeline.channel"
-                           tabindex=2/>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+        <!--            <tbody class="artifact" ng-init>-->
+        <!--            <tr ng-repeat="pipeline in pipelines" style="margin-bottom: 15px; margin-top: 10px;">-->
+        <!--                <td>-->
+        <!--                    <span class="icon_remove delete_parent" ng-click="removeSource($index)"></span>-->
+        <!--                </td>-->
+        <!--                <td class="name_value_cell">-->
+        <!--                    <input class="slack-pipelines-autocomplete slack-plugin-input" type="text"-->
+        <!--                           ng-model="pipeline.pipelineStageJob" tabindex=1-->
+        <!--                           ng-minlength="3"-->
+        <!--                           ng-required="true"/>-->
+        <!--                </td>-->
+        <!--                <td class="name_value_cell">-->
+        <!--                    <input class="slack-pipeline-channel slack-plugin-input" type="text" ng-model="pipeline.channel"-->
+        <!--                           tabindex=2/>-->
+        <!--                </td>-->
+        <!--            </tr>-->
+
+        <!--            </tbody>-->
+        <!--        </table>-->
+
+        <h4><label for="host">Host:</label></h4>
+        <input id="host" name="host" type="url"/>
+        <fieldset>
+            <legend>MS Team Config</legend>
+            <table>
+                <thead>
+                <tr>
+                    <th><h4 class="src"> Team ID </h4></th>
+                    <th><h4 class="dest"> Display Name </h4></th>
+                </tr>
+                </thead>
+                <tr style="margin-bottom: 15px; margin-top: 10px;">
+                    <td class="name_value_cell">
+                        <input id="team_id" name="teamId" type="text"/>
+                    </td>
+                    <td class="name_value_cell">
+                        <input id="display_name" name="displayName" type="text">
+                    </td>
+                </tr>
+            </table>
+
+            <h4><label for="icon_url">Icon URL</label></h4>
+            <input id="icon_url" name="iconUrl" type="url"><br>
+
+            <fieldset>
+                <legend>Channels</legend>
+                <div ng-repeat="item in channels track by $index">
+                    <input type="text" ng-model="channels[$index]">
+                </div>
+                <a id="add_channel" ng-click="addChannel()" class="action_icon skip_dirty_stop add_icon" title=""
+                   href="#"><span class="icon"></span><span>Add Channel</span></a>
+            </fieldset>
+            <br>
+            <fieldset>
+                <legend>Pipeline Config</legend>
+
+                <table>
+                    <thead>
+                    <tr>
+                        <th><h4 class="src"> Pipeline </h4></th>
+                        <th><h4 class="dest"> Stage </h4></th>
+                        <th><h4 class="dest"> Group </h4></th>
+                    </tr>
+                    </thead>
+                    <tr style="margin-bottom: 15px; margin-top: 10px;">
+                        <td class="name_value_cell">
+                            <input id="pipeline" type="text"/>
+                        </td>
+                        <td class="name_value_cell">
+                            <input id="stage" type="text"/>
+                        </td>
+                        <td class="name_value_cell">
+                            <input id="group" type="text"/>
+                        </td>
+                    </tr>
+                </table>
+
+                <label for="statuses">Statuses</label>
+                <input id="statuses" type="text">
+                <a id="add_pipeline_config" ng-click="addPipelineConfig()"
+                   class="action_icon skip_dirty_stop add_icon"
+                   title=""
+                   href="#"><span class="icon"></span><span>Add</span></a>
+            </fieldset>
+        </fieldset>
+
         <input id="sourceDestinations" type="hidden" ng-model="pipelineConfig" value="{{pipelineConfig}}">
-        <a id="add_pipeline_config" ng-click="addPipelineRule()" class="action_icon skip_dirty_stop add_icon" title=""
-           href="#"><span class="icon"></span><span>Add</span></a>
+        <a id="add_pipeline_confi" ng-click="addPipelineRule()" class="action_icon skip_dirty_stop add_icon"
+           title=""
+           href="#"><span class="icon"></span><span>Add MS Team Config</span></a>
         <span class="form_error" ng-show="GOINPUTNAME[pipelineConfig].$error.goCdClient">{{ GOINPUTNAME[pipelineConfig].$error.goCdClient }}</span>
     </div>
 </fieldset>
 
 <script type="text/javascript">
-var allPipelines;
-setTimeout(function() {
+    var allPipelines;
+    setTimeout(function () {
 
-    jQuery("#pipeline-configurations").on("result", "input.slack-pipelines-autocomplete", function() {
-        jQuery(this).trigger("input");
-    });
-
-    jQuery.get("/go/cctray.xml", function(data) {
-        var pipelines =
-        _.map(
-            _.uniq(
-                _.filter(
-                    _.map(jQuery(data).find("Project"), function(project) {
-                        return jQuery(project).attr("name");
-                    })
-                    , function(projectName) {
-                        return projectName.split("::").length == 3;
-                    })
-            ), function(projectName) {
-            nameParts = projectName.split("::");
-            return {
-                "pipeline": _.trim(nameParts[0]),
-                "stage": _.trim(nameParts[1]),
-                "job": _.trim(nameParts[2])
-            };
+        jQuery("#pipeline-configurations").on("result", "input.slack-pipelines-autocomplete", function () {
+            jQuery(this).trigger("input");
         });
-        allPipelines = pipelines;
 
-        var interval = setInterval(function() {
-            $scope = angular.element(document.getElementById("plugin_settings_angular_plugin_settings")).scope();
-            var DEFAULT_PIPELINE_CONFIG = { pipelineStageJob: ".* | .* | .*", channel: " ch1 | ch2", owner: ""};
-            $scope.$apply(function() {
-                $scope.pipelines = $scope.pipelineConfig ? JSON.parse($scope.pipelineConfig) : [DEFAULT_PIPELINE_CONFIG];
-                slackPluginUpdateAutocompleteViews();
-                $scope.addPipelineRule = function() {
-                    $scope.pipelines.push(DEFAULT_PIPELINE_CONFIG);
-                };
-                $scope.removeSource = function(index) {
-                    $scope.pipelines.splice(index, 1);
-                }
-            });
-            $scope.$watch("pipelines", function(){
-                $scope.pipelineConfig = angular.copy($scope.pipelines).toJSON();
-                slackPluginUpdateAutocompleteViews();
-            }, true);
-            clearInterval(interval);
-            slackPluginUpdateAutocompleteViews();
-        }, 50);
-    });
-}, 50);
+        jQuery.get("/go/cctray.xml", function (data) {
+            var pipelines =
+                _.map(
+                    _.uniq(
+                        _.filter(
+                            _.map(jQuery(data).find("Project"), function (project) {
+                                return jQuery(project).attr("name");
+                            })
+                            , function (projectName) {
+                                return projectName.split("::").length == 3;
+                            })
+                    ), function (projectName) {
+                        nameParts = projectName.split("::");
+                        return {
+                            "pipeline": _.trim(nameParts[0]),
+                            "stage": _.trim(nameParts[1]),
+                            "job": _.trim(nameParts[2])
+                        };
+                    });
+            allPipelines = pipelines;
 
-function slackPluginUpdateAutocompleteViews() {
-    jQuery(".slack-pipelines-autocomplete").autocomplete(allPipelines, {
-        minChars: 0,
-        width: 400,
-        matchContains: "word",
-        autoFill: false,
-        formatItem: function(row, i, max) {
-            return  row.pipeline + " | " + row.stage + " | " + row.job;
-        },
-        formatMatch: function(row, i, max) {
-            return row.pipeline + " " + row.stage + " " + row.job;
-        },
-        formatResult: function(row) {
-            return row.pipeline + " | " + row.stage + " | " + row.job;
-        }
-    });
-}
+            var interval = setInterval(function () {
+                $scope = angular.element(document.getElementById("plugin_settings_angular_plugin_settings")).scope();
+                var DEFAULT_PIPELINE_CONFIG = {pipelineStageJob: ".* | .* | .*", channel: " ch1 | ch2", owner: ""};
+                var EMPTY_STRING = '';
+                $scope.$apply(function () {
+                    $scope.pipelines = $scope.pipelineConfig ? JSON.parse($scope.pipelineConfig) : [DEFAULT_PIPELINE_CONFIG];
+                    $scope.channels = [EMPTY_STRING];
+                    slackPluginUpdateAutocompleteViews();
+                    $scope.addPipelineRule = function () {
+                        $scope.pipelines.push(DEFAULT_PIPELINE_CONFIG);
+                    };
+                    $scope.removeSource = function (index) {
+                        $scope.pipelines.splice(index, 1);
+                    };
+
+                    $scope.addChannel =  function () {
+                        $scope.channels.push(EMPTY_STRING);
+                    };
+                });
+                $scope.$watch("pipelines", function () {
+                    $scope.pipelineConfig = angular.copy($scope.pipelines).toJSON();
+                    slackPluginUpdateAutocompleteViews();
+                }, true);
+                clearInterval(interval);
+                slackPluginUpdateAutocompleteViews();
+            }, 50);
+        });
+    }, 50);
+
+    function slackPluginUpdateAutocompleteViews() {
+        jQuery(".slack-pipelines-autocomplete").autocomplete(allPipelines, {
+            minChars: 0,
+            width: 400,
+            matchContains: "word",
+            autoFill: false,
+            formatItem: function (row, i, max) {
+                return row.pipeline + " | " + row.stage + " | " + row.job;
+            },
+            formatMatch: function (row, i, max) {
+                return row.pipeline + " " + row.stage + " " + row.job;
+            },
+            formatResult: function (row) {
+                return row.pipeline + " | " + row.stage + " | " + row.job;
+            }
+        });
+    }
 
 </script>
 <style type="text/css">
     input.slack-plugin-input {
         width: 210px;
     }
+
+    table {
+        width: 100%;
+    }
+
+    .form_item_block input {
+        width: 100%;
+    }
+
 </style>
