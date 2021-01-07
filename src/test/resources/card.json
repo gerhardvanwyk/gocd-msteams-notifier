@@ -47,11 +47,9 @@
       "separator": true,
       "columns": [
         {
-          "width": "32px",
           "items": [
             {
               "type": "Image",
-              "width": "32px",
               "style": "person",
               "horizontalAlignment": "center",
               "url": "https://gocd-pe.gamesys.co.uk/go/assets/andare/gears-loader-6787012330bb6e08de8739ad712d548b2a0029153595445635536efc1ae1398a.gif",
@@ -64,7 +62,7 @@
           "items": [
             {
               "type": "TextBlock",
-              "text": "**Title**"
+              "text": "**Stage [pipeline/11/stage_name_build/11] has FAILED**"
             }
           ]
         }
@@ -87,7 +85,7 @@
           "items": [
             {
               "type": "TextBlock",
-              "text": "Revision 1"
+              "text": " Revision 1"
             },
             {
               "type": "ColumnSet",
@@ -99,20 +97,111 @@
                       "type": "TextBlock",
                       "spacing": "none",
                       "isSubtle": true,
-                      "text": "\"Visual design for Project A\" to \"Fabrikam\" list"
-                    },
-                    {
-                      "type": "TextBlock",
-                      "spacing": "small",
-                      "isSubtle": true,
-                      "text": "Revision: 12/12/2017"
+                      "text": "Revision: 5"
                     },
                     {
                       "type": "TextBlock",
                       "spacing": "none",
                       "isSubtle": true,
-                      "wrap": true,
-                      "text": "Comment: \"We need to make sure we have updated designs for our meeting on Monday.\""
+                      "text": "Comment: Git commit message "
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Username: username"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Email: user@gmail.com"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Revision: 485214789632589632145896325632"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Comment: Git commit message modification 2 "
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Username: username-agina"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Email: user@gmail.com"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "TextBlock",
+              "text": " Revision 2"
+            },
+            {
+              "type": "ColumnSet",
+              "spacing": "medium",
+              "columns": [
+                {
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Revision: 5"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Comment: Git commit message "
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Username: username"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Email: user@gmail.com"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Revision: 485214789632589632145896325632"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Comment: Git commit message modification 2 "
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Username: username-agina"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Email: user@gmail.com"
                     }
                   ]
                 }
@@ -128,79 +217,35 @@
         {
           "type": "ColumnSet",
           "columns": [
-            {
-              "width": "32px"
-            },
+            {},
             {
               "width": "stretch",
               "items": [
                 {
-                  "type": "ActionSet",
-                  "actions": [
+                  "type": "Input.ChoiceSet",
+                  "id": "comment",
+                  "value": "Pick a log to view",
+                  "placeholder": "Select log",
+                  "choices": [
                     {
-                      "type": "Action.ShowCard",
-                      "title": "Add a comment",
-                      "card": {
-                        "type": "AdaptiveCard",
-                        "body": [
-                          {
-                            "type": "Input.Text",
-                            "isMultiline": true,
-                            "id": "textinputid"
-                          },
-                          {
-                            "type": "ActionSet",
-                            "spacing": "small",
-                            "actions": [
-                              {
-                                "type": "Action.Http",
-                                "method": "POST",
-                                "body": "{}",
-                                "title": "OK",
-                                "url": "https://messagecardplaygroundfn.azurewebsites.net/api/HttpPost?code=zJaYHdG4dZdPK0GTymwYzpaCtcPAPec8fTvc2flJRvahwigYWg3p0A==&message=The comment was added successfully"
-                              }
-                            ]
-                          }
-                        ]
-                      }
+                      "title": "Console Link 1",
+                      "value": "http://localhost:5183/go/files/pipeline1/11/stage_name_build/11/Job1/cruise-output/console.log"
                     },
                     {
-                      "type": "Action.ShowCard",
-                      "title": "Move card",
-                      "card": {
-                        "type": "AdaptiveCard",
-                        "body": [
-                          {
-                            "type": "Input.ChoiceSet",
-                            "placeholder": "Pick a list",
-                            "id": "choiceinputid",
-                            "isRequired": true,
-                            "choices": [
-                              {
-                                "title": "List 1",
-                                "value": "List 1"
-                              },
-                              {
-                                "title": "List 2",
-                                "value": "List 2"
-                              }
-                            ]
-                          },
-                          {
-                            "type": "ActionSet",
-                            "spacing": "small",
-                            "actions": [
-                              {
-                                "type": "Action.Http",
-                                "method": "POST",
-                                "body": "{{choiceinputid.value}}",
-                                "title": "OK",
-                                "url": "https://messagecardplaygroundfn.azurewebsites.net/api/HttpPost?code=zJaYHdG4dZdPK0GTymwYzpaCtcPAPec8fTvc2flJRvahwigYWg3p0A==&message=The card was moved to '{{choiceinputid.value}}' successfully"
-                              }
-                            ]
-                          }
-                        ]
-                      }
+                      "title": "Console Link 2",
+                      "value": "http://localhost:5183/go/files/pipeline1/11/stage_name_build/11/Job2/cruise-output/console.log"
+                    },
+                    {
+                      "title": "Console Link 3",
+                      "value": "http://localhost:5183/go/files/pipeline1/11/stage_name_build/11/Job3/cruise-output/console.log"
+                    }
+                  ]
+                },
+                {
+                  "potentialAction": [
+                    {
+                      "@type": "OpenUri",
+                      "name": "View conversation"
                     }
                   ]
                 }

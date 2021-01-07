@@ -98,11 +98,9 @@ public class Message {
                 "      \"separator\": true,\n" +
                 "      \"columns\": [\n" +
                 "        {\n" +
-                "          \"width\": \"32px\",\n" +
                 "          \"items\": [\n" +
                 "            {\n" +
                 "              \"type\": \"Image\",\n" +
-                "              \"width\": \"32px\",\n" +
                 "              \"style\": \"person\",\n" +
                 "              \"horizontalAlignment\": \"center\",\n" +
                 "              \"url\": \"https://gocd-pe.gamesys.co.uk/go/assets/andare/gears-loader-6787012330bb6e08de8739ad712d548b2a0029153595445635536efc1ae1398a.gif\",\n" +
@@ -129,13 +127,12 @@ public class Message {
 //        buffer.append("<p>").append("</p>");
 
         int rc = 1;
-        buffer.append("    {\n" +
+        buffer.append("{\n" +
                 "      \"type\": \"ColumnSet\",\n" +
                 "      \"spacing\": \"large\",\n" +
                 "      \"separator\": true,\n" +
                 "      \"columns\": [\n" +
                 "        {\n" +
-                "          \"width\": \"32px\",\n" +
                 "          \"items\": [\n" +
                 "            {\n" +
                 "              \"type\": \"TextBlock\",\n" +
@@ -144,7 +141,6 @@ public class Message {
                 "          ]\n" +
                 "        },\n" +
                 "        {\n" +
-                "          \"width\": \"32px\",\n" +
                 "          \"items\": [");
         for(MaterialRevision revision: changes){
             buffer.append("            {\n" +
@@ -179,11 +175,13 @@ public class Message {
                         "                      \"isSubtle\": true,\n" +
                         "                      \"text\":").append("\"Email: ").append(md.getEmail()).append("\"},");
             }
-            buffer.append("]");
-            buffer.append("                }\n" +
-                    "              ]\n" +
-                    "            }");
+            buffer.deleteCharAt(buffer.lastIndexOf(","));
+                        buffer.append("]");  //closing items line 148
+            buffer.append("}\n" +
+                    "  ]\n" +  //closing columns line 136
+                    " },");  //closing ColumnSet Item line 132
         }
+        buffer.deleteCharAt(buffer.lastIndexOf(","));
         buffer.append("]");
         buffer.append("        }\n" +
                 "      ]\n" +
@@ -195,7 +193,6 @@ public class Message {
                 "          \"type\": \"ColumnSet\",\n" +
                 "          \"columns\": [\n" +
                 "            {\n" +
-                "              \"width\": \"32px\"\n" +
                 "            },\n" +
                 "            {\n" +
                 "              \"width\": \"stretch\",\n" +
@@ -229,10 +226,12 @@ public class Message {
                 "                          }\n" +
                 "                        ]\n" +
                 "                      }\n" +
-                "                    },\n" +
-                "                    {\n" +
-                "                      \"type\": \"Action.ShowCard\",\n" +
-                "                      \"title\": \"Move card\",\n" +
+                "                    },\n");
+
+
+        buffer.append("    {\n" +
+                "                      \"type\": \"Action.OpenUrl\",\n" +
+                "                      \"title\": \"Open Issue\",\n" +
                 "                      \"card\": {\n" +
                 "                        \"type\": \"AdaptiveCard\",\n" +
                 "                        \"body\": [\n" +
@@ -241,16 +240,25 @@ public class Message {
                 "                            \"placeholder\": \"Pick a list\",\n" +
                 "                            \"id\": \"choiceinputid\",\n" +
                 "                            \"isRequired\": true,\n" +
-                "                            \"choices\": [\n" +
-                "                              {\n" +
-                "                                \"title\": \"List 1\",\n" +
-                "                                \"value\": \"List 1\"\n" +
-                "                              },\n" +
-                "                              {\n" +
-                "                                \"title\": \"List 2\",\n" +
-                "                                \"value\": \"List 2\"\n" +
-                "                              }\n" +
-                "                            ]\n" +
+                "                            \"choices\": [\n");
+
+
+
+
+
+
+        List<String> consoleLogLinks = createConsoleLogLinks(configuration.getGoServerHost(), details, stage, status);
+        int cnt = 1;
+        if (!consoleLogLinks.isEmpty()) {
+            for(String links: consoleLogLinks){
+                buffer.append("{");
+                buffer.append("\"title\":").append("\"Console Link ").append(cnt++).append("\"").append(",\n");
+                buffer.append("\"value\":" ).append("\"").append(links).append("\"").append('\n');
+                buffer.append("},");
+            }
+        }
+        buffer.deleteCharAt(buffer.lastIndexOf(","));
+        buffer.append("]\n" +
                 "                          },\n" +
                 "                          {\n" +
                 "                            \"type\": \"ActionSet\",\n" +
@@ -276,6 +284,8 @@ public class Message {
                 "        }\n" +
                 "      ]\n" +
                 "    }");
+        buffer.append("    ]\n" +
+                "}");
 
 //        buffer.append("<div>Triggered by: ").append(stage.getApprovedBy()).append("</div>\n" +
 //                "    <div>Reason: ");
@@ -386,7 +396,7 @@ public class Message {
                         pipeline.getCounter(), stage.getName(), stage.getCounter(), job));
             }
             // TODO - May be it's only useful to show the failed job logs instead of all jobs?
-            consoleLinks.add("<a href=" + link.normalize().toASCIIString() + ">" + "| View " + job + " logs </a>");
+            consoleLinks.add(link.normalize().toASCIIString() );
         }
         return consoleLinks;
     }
