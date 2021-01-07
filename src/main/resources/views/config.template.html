@@ -4,115 +4,258 @@
     <h4>Note - Values here are for demonstration purpose only</h4>
 </div>
 
-<fieldset>
-    <div class="form_item_block">
-        <table id="pipeline-configurations">
+<div class="form_item_block">
+    <!--        <table id="pipeline-configurations">-->
+    <!--            <thead>-->
+    <!--            <tr>-->
+    <!--                <th>&nbsp;</th>-->
+    <!--                <th><h4 class="src"> Pipeline | Stage | Job </h4></th>-->
+    <!--                <th><h4 class="dest"> Channels [webhook URL] ( | Separated list) </h4></th>-->
+    <!--            </tr>-->
+    <!--            </thead>-->
+
+    <!--            <tbody class="artifact" ng-init>-->
+    <!--            <tr ng-repeat="pipeline in pipelines" style="margin-bottom: 15px; margin-top: 10px;">-->
+    <!--                <td>-->
+    <!--                    <span class="icon_remove delete_parent" ng-click="removeSource($index)"></span>-->
+    <!--                </td>-->
+    <!--                <td class="name_value_cell">-->
+    <!--                    <input class="slack-pipelines-autocomplete slack-plugin-input" type="text"-->
+    <!--                           ng-model="pipeline.pipelineStageJob" tabindex=1-->
+    <!--                           ng-minlength="3"-->
+    <!--                           ng-required="true"/>-->
+    <!--                </td>-->
+    <!--                <td class="name_value_cell">-->
+    <!--                    <input class="slack-pipeline-channel slack-plugin-input" type="text" ng-model="pipeline.channel"-->
+    <!--                           tabindex=2/>-->
+    <!--                </td>-->
+    <!--            </tr>-->
+
+    <!--            </tbody>-->
+    <!--        </table>-->
+
+    <h4><label for="host">Host:</label></h4>
+    <input id="host" name="host" type="url"/>
+    <fieldset ng-repeat="msTeamsConfig in configuration.msTeamsConfigs"
+              ng-init="msTeamsConfigIndex = $index" style="margin-bottom: 10px">
+        <legend>MS Team Config</legend>
+        <table>
             <thead>
             <tr>
-                <th>&nbsp;</th>
-                <th><h4 class="src"> Pipeline | Stage | Job </h4></th>
-                <th><h4 class="dest"> Channels [webhook URL] ( | Separated list) </h4></th>
+                <th><h4 class="src"> Team ID </h4></th>
+                <th><h4 class="dest"> Display Name </h4></th>
             </tr>
             </thead>
-
-            <tbody class="artifact" ng-init>
-            <tr ng-repeat="pipeline in pipelines" style="margin-bottom: 15px; margin-top: 10px;">
-                <td>
-                    <span class="icon_remove delete_parent" ng-click="removeSource($index)"></span>
+            <tr style="margin-bottom: 15px; margin-top: 10px;">
+                <td class="name_value_cell">
+                    <input ng-model="msTeamsConfig.teamId" type="text"/>
                 </td>
                 <td class="name_value_cell">
-                    <input class="slack-pipelines-autocomplete slack-plugin-input" type="text"
-                           ng-model="pipeline.pipelineStageJob" tabindex=1
-                           ng-minlength="3"
-                           ng-required="true"/>
-                </td>
-                <td class="name_value_cell">
-                    <input class="slack-pipeline-channel slack-plugin-input" type="text" ng-model="pipeline.channel"
-                           tabindex=2/>
+                    <input ng-model="msTeamsConfig.displayName" type="text">
                 </td>
             </tr>
-            </tbody>
         </table>
-        <input id="sourceDestinations" type="hidden" ng-model="pipelineConfig" value="{{pipelineConfig}}">
-        <a id="add_pipeline_config" ng-click="addPipelineRule()" class="action_icon skip_dirty_stop add_icon" title=""
-           href="#"><span class="icon"></span><span>Add</span></a>
-        <span class="form_error" ng-show="GOINPUTNAME[pipelineConfig].$error.goCdClient">{{ GOINPUTNAME[pipelineConfig].$error.goCdClient }}</span>
-    </div>
-</fieldset>
+
+        <h4><label>Icon URL</label></h4>
+        <input ng-model="msTeamsConfig.iconUrl" type="url"><br>
+
+        <fieldset>
+            <legend>Channels</legend>
+            <div ng-repeat="channel in msTeamsConfig.channels" ng-init="channelIndex = $index">
+                <input type="text" ng-model="channel">
+            </div>
+        </fieldset>
+        <a id="add_channel" ng-click="addChannel(msTeamsConfigIndex)" class="action_icon skip_dirty_stop add_icon"
+           title=""
+           href="#"><span class="icon"></span><span>Add Channel</span></a>
+        <br>
+        <fieldset>
+            <legend>Pipeline Config</legend>
+            <div ng-repeat="pipelineConfig in msTeamsConfig.pipelineConfigs">
+                <table>
+                    <thead>
+                    <tr>
+                        <th><h4 class="src"> Pipeline </h4></th>
+                        <th><h4 class="dest"> Stage </h4></th>
+                        <th><h4 class="dest"> Group </h4></th>
+                    </tr>
+                    </thead>
+                    <tr style="margin-bottom: 15px; margin-top: 10px;">
+                        <td class="name_value_cell">
+                            <input ng-model="pipelineConfig.pipeline" type="text"/>
+                        </td>
+                        <td class="name_value_cell">
+                            <input ng-model="pipelineConfigs.stage" type="text"/>
+                        </td>
+                        <td class="name_value_cell">
+                            <input ng-model="pipelineConfig.group" type="text"/>
+                        </td>
+                    </tr>
+                </table>
+
+                <label>Statuses</label>
+                <input ng-model="pipelineConfig.statuses" type="text">
+
+            </div>
+        </fieldset>
+        <a id="add_pipeline_config" ng-click="addPipelineConfig(msTeamsConfigIndex)"
+           class="action_icon skip_dirty_stop add_icon"
+           title=""
+           href="#"><span class="icon"></span><span>Add Pipeline Config</span></a>
+    </fieldset>
+
+    <input id="sourceDestinations" type="hidden" ng-model="pipelineConfig" value="{{pipelineConfig}}">
+    <a id="add_pipeline_confi" ng-click="addMsTeamsConfig()" class="action_icon skip_dirty_stop add_icon"
+       title=""
+       href="#"><span class="icon"></span><span>Add MS Team Config</span></a>
+    <span class="form_error" ng-show="GOINPUTNAME[pipelineConfig].$error.goCdClient">{{ GOINPUTNAME[pipelineConfig].$error.goCdClient }}</span>
+</div>
 
 <script type="text/javascript">
-var allPipelines;
-setTimeout(function() {
+    var allPipelines;
+    setTimeout(function () {
 
-    jQuery("#pipeline-configurations").on("result", "input.slack-pipelines-autocomplete", function() {
-        jQuery(this).trigger("input");
-    });
-
-    jQuery.get("/go/cctray.xml", function(data) {
-        var pipelines =
-        _.map(
-            _.uniq(
-                _.filter(
-                    _.map(jQuery(data).find("Project"), function(project) {
-                        return jQuery(project).attr("name");
-                    })
-                    , function(projectName) {
-                        return projectName.split("::").length == 3;
-                    })
-            ), function(projectName) {
-            nameParts = projectName.split("::");
-            return {
-                "pipeline": _.trim(nameParts[0]),
-                "stage": _.trim(nameParts[1]),
-                "job": _.trim(nameParts[2])
-            };
+        jQuery("#pipeline-configurations").on("result", "input.slack-pipelines-autocomplete", function () {
+            jQuery(this).trigger("input");
         });
-        allPipelines = pipelines;
 
-        var interval = setInterval(function() {
-            $scope = angular.element(document.getElementById("plugin_settings_angular_plugin_settings")).scope();
-            var DEFAULT_PIPELINE_CONFIG = { pipelineStageJob: ".* | .* | .*", channel: " ch1 | ch2", owner: ""};
-            $scope.$apply(function() {
-                $scope.pipelines = $scope.pipelineConfig ? JSON.parse($scope.pipelineConfig) : [DEFAULT_PIPELINE_CONFIG];
-                slackPluginUpdateAutocompleteViews();
-                $scope.addPipelineRule = function() {
-                    $scope.pipelines.push(DEFAULT_PIPELINE_CONFIG);
+        jQuery.get("/go/cctray.xml", function (data) {
+            var pipelines =
+                _.map(
+                    _.uniq(
+                        _.filter(
+                            _.map(jQuery(data).find("Project"), function (project) {
+                                return jQuery(project).attr("name");
+                            })
+                            , function (projectName) {
+                                return projectName.split("::").length == 3;
+                            })
+                    ), function (projectName) {
+                        nameParts = projectName.split("::");
+                        return {
+                            "pipeline": _.trim(nameParts[0]),
+                            "stage": _.trim(nameParts[1]),
+                            "job": _.trim(nameParts[2])
+                        };
+                    });
+            allPipelines = pipelines;
+
+            var interval = setInterval(function () {
+                $scope = angular.element(document.getElementById("plugin_settings_angular_plugin_settings")).scope();
+
+
+                var EMPTY_STRING = "";
+                var DEFAULT_PIPELINE_CONFIG = {
+                    pipeline: EMPTY_STRING,
+                    stage: EMPTY_STRING,
+                    group: EMPTY_STRING,
+                    statuses: EMPTY_STRING
                 };
-                $scope.removeSource = function(index) {
-                    $scope.pipelines.splice(index, 1);
+                var DEFAULT_MS_TEAMS_CONFIG = {
+                    teamId: "", displayName: EMPTY_STRING, iconURL: EMPTY_STRING,
+                    channels: [EMPTY_STRING], pipelineConfigs: [{
+                        pipeline: EMPTY_STRING,
+                        stage: EMPTY_STRING,
+                        group: EMPTY_STRING,
+                        statuses: EMPTY_STRING
+                    }]
                 }
-            });
-            $scope.$watch("pipelines", function(){
-                $scope.pipelineConfig = angular.copy($scope.pipelines).toJSON();
-                slackPluginUpdateAutocompleteViews();
-            }, true);
-            clearInterval(interval);
-            slackPluginUpdateAutocompleteViews();
-        }, 50);
-    });
-}, 50);
 
-function slackPluginUpdateAutocompleteViews() {
-    jQuery(".slack-pipelines-autocomplete").autocomplete(allPipelines, {
-        minChars: 0,
-        width: 400,
-        matchContains: "word",
-        autoFill: false,
-        formatItem: function(row, i, max) {
-            return  row.pipeline + " | " + row.stage + " | " + row.job;
-        },
-        formatMatch: function(row, i, max) {
-            return row.pipeline + " " + row.stage + " " + row.job;
-        },
-        formatResult: function(row) {
-            return row.pipeline + " | " + row.stage + " | " + row.job;
-        }
-    });
-}
+                var DEFAULT_CONFIGURATION = {host: "", msTeamsConfigs: [DEFAULT_MS_TEAMS_CONFIG]}
+
+                $scope.$apply(function () {
+                    $scope.pipelines = $scope.pipelineConfig ? JSON.parse($scope.pipelineConfig) : [DEFAULT_PIPELINE_CONFIG];
+                    if (!$scope.configuration) {
+                        $scope.configuration = DEFAULT_CONFIGURATION;
+                    }
+
+                    console.log("Configuration: ", $scope.configuration);
+
+                    $scope.addMsTeamsConfig = function () {
+                        console.log("Ms Teams Config: ", $scope.configuration.msTeamsConfigs);
+                        $scope.configuration.msTeamsConfigs.push(
+                            {
+                                teamId: "", displayName: EMPTY_STRING, iconURL: EMPTY_STRING,
+                                channels: [EMPTY_STRING], pipelineConfigs: [{
+                                    pipeline: EMPTY_STRING,
+                                    stage: EMPTY_STRING,
+                                    group: EMPTY_STRING,
+                                    statuses: EMPTY_STRING
+                                }]
+                            }
+                        );
+                    }
+                    $scope.removeMsTeamsConfig = function (index) {
+                        $scope.configuration.msTeamsConfigs.splice(index, 1);
+                    }
+
+                    $scope.addPipelineConfig = function (msTeamsConfigIndex) {
+                        $scope.configuration.msTeamsConfigs[msTeamsConfigIndex].pipelineConfigs.push(
+                            {
+                                pipeline: EMPTY_STRING,
+                                stage: EMPTY_STRING,
+                                group: EMPTY_STRING,
+                                statuses: EMPTY_STRING
+                            }
+                        );
+                    };
+                    $scope.removePipelineConfig = function (msTeamsConfigIndex, pipelineConfigIndex) {
+                        $scope.configuration.msTeamsConfigs[msTeamsConfigIndex].pipelineConfigs.splice(pipelineConfigIndex, 1);
+                    };
+                    $scope.addChannel = function (msTeamsConfigIndex) {
+                        $scope.configuration.msTeamsConfigs[msTeamsConfigIndex].channels.push(EMPTY_STRING);
+                    };
+                    $scope.removeChannel = function (msTeamsConfigIndex, channelIndex) {
+
+                        $scope.configuration.msTeamsConfigs[msTeamsConfigIndex].channels.splice(channelIndex, 1);
+                    };
+                    slackPluginUpdateAutocompleteViews();
+                });
+                $scope.$watch("pipelines", function () {
+                    $scope.pipelineConfig = angular.copy($scope.pipelines).toJSON();
+                    slackPluginUpdateAutocompleteViews();
+                }, true);
+                clearInterval(interval);
+                slackPluginUpdateAutocompleteViews();
+            }, 50);
+        });
+    }, 50);
+
+    function slackPluginUpdateAutocompleteViews() {
+        jQuery(".slack-pipelines-autocomplete").autocomplete(allPipelines, {
+            minChars: 0,
+            width: 400,
+            matchContains: "word",
+            autoFill: false,
+            formatItem: function (row, i, max) {
+                return row.pipeline + " | " + row.stage + " | " + row.job;
+            },
+            formatMatch: function (row, i, max) {
+                return row.pipeline + " " + row.stage + " " + row.job;
+            },
+            formatResult: function (row) {
+                return row.pipeline + " | " + row.stage + " | " + row.job;
+            }
+        });
+    }
 
 </script>
 <style type="text/css">
     input.slack-plugin-input {
         width: 210px;
     }
+
+    table {
+        width: 100%;
+    }
+
+    .form_item_block input {
+        width: 100%;
+    }
+
+    fieldset {
+        padding: 10px 5px;
+        margin-bottom: 10px;
+    }
+
 </style>
