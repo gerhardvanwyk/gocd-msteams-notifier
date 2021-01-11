@@ -46,7 +46,8 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
 
     private final Timer timer = new Timer();
     private long configLastModified = 0L;
-   // private File pluginConfigFile;
+    private GoApplicationAccessor accessor;
+    // private File pluginConfigFile;
 
     public GoNotificationPlugin() {
         File pluginConfigFile = findGoNotifyConfigPath();
@@ -86,7 +87,7 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
     }
 
     public void initializeGoApplicationAccessor(GoApplicationAccessor goApplicationAccessor) {
-        // ignore
+        this.accessor = goApplicationAccessor;
     }
 
     public GoPluginApiResponse handle(GoPluginApiRequest goPluginApiRequest) {

@@ -9,6 +9,7 @@ public class Utils {
 
     public static ObjectMapper getMapper(){
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+      //  mapper.getJsonFactory().setCharacterEscapes(new HTMLCharacterEscape());
         return  mapper;
     }
 }
