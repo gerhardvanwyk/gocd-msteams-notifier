@@ -1,5 +1,6 @@
 package com.roxorgaming.gocd.mstream.configuration;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldNameConstants;
 
@@ -13,10 +14,15 @@ import java.util.Map;
 @AllArgsConstructor
 public class MsTeamsConfig {
 
+    @JsonProperty
     private String teamsId;
+    @JsonProperty
     private String displayName;
+    @JsonProperty
     private String iconUrl;
+    @JsonProperty
     private List<String> channels;
+    @JsonProperty
     private List<PipelineConfig> pipelineConfig = new ArrayList<>();
 
     @Setter(AccessLevel.NONE)

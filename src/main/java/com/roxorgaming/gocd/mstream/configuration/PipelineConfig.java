@@ -1,5 +1,6 @@
 package com.roxorgaming.gocd.mstream.configuration;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import in.ashwanthkumar.utils.collections.Iterables;
 import in.ashwanthkumar.utils.func.Predicate;
 import in.ashwanthkumar.utils.lang.StringUtils;
@@ -14,9 +15,17 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PipelineConfig {
+
+    @JsonProperty
     private String nameRegex;
+
+    @JsonProperty
     private String stageRegex;
+
+    @JsonProperty
     private String groupRegex;
+
+    @JsonProperty
     private List<PipelineStatus> pipelineStatus = new ArrayList<>();
 
     @Setter(AccessLevel.NONE)

@@ -1,5 +1,6 @@
 package com.roxorgaming.gocd.mstream.configuration;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigList;
@@ -34,6 +35,7 @@ public class Configuration {
      * @param enabled
      * @return
      */
+    @JsonProperty("enabled")
     private boolean enabled;
 
     /**
@@ -41,8 +43,10 @@ public class Configuration {
      * ************************/
 
     // MS Teams Host
+    @JsonProperty
     private String apiMsTeamsHost;
 
+    @JsonProperty
     private List<MsTeamsConfig> msTeamsConfigList = new ArrayList<>();
 
     /*
@@ -52,18 +56,27 @@ public class Configuration {
      * GoCD Server with Port
      * http://localhost:8153
      */
+    @JsonProperty
     private String goServerHost;
+    @JsonProperty
     private String goLogin;
+    @JsonProperty
     private String goPassword;
+    @JsonProperty
     private String goAPIToken;
 
     /*
       Optional Output Configuration
      *******************/
+    @JsonProperty
     private boolean displayConsoleLogLinks;
+    @JsonProperty
     private boolean displayMaterialChanges;
+    @JsonProperty
     private boolean processAllRules;
+    @JsonProperty
     private boolean truncateChanges;
+    @JsonProperty
     private Proxy proxy;
 
     @Setter(AccessLevel.PRIVATE)

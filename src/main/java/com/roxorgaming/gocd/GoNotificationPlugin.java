@@ -1,11 +1,14 @@
 package com.roxorgaming.gocd;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.GsonBuilder;
 import com.roxorgaming.gocd.msteams.jsonapi.GoCdClient;
 import com.roxorgaming.gocd.mstream.GoEnvironment;
 import com.roxorgaming.gocd.mstream.MsTeamsPipelineListener;
 import com.roxorgaming.gocd.mstream.PipelineListener;
 import com.roxorgaming.gocd.mstream.base.AbstractNotificationPlugin;
+import com.roxorgaming.gocd.mstream.base.Utils;
 import com.roxorgaming.gocd.mstream.configuration.Configuration;
 import com.roxorgaming.gocd.mstream.configuration.ConfigReader;
 import com.roxorgaming.gocd.mstream.notification.GoNotificationService;
@@ -16,6 +19,7 @@ import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
 import com.thoughtworks.go.plugin.api.annotation.Extension;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
+import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import in.ashwanthkumar.utils.lang.StringUtils;
 import lombok.extern.java.Log;
@@ -41,6 +45,7 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
     private GoEnvironment environment = new GoEnvironment();
     private Configuration configuration;
     private PipelineListener pipelineListener;
+    private ObjectMapper mapper;
 
     private final Timer timer = new Timer();
     private long configLastModified = 0L;
@@ -48,6 +53,7 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
 
     public GoNotificationPlugin() {
         File pluginConfigFile = findGoNotifyConfigPath();
+        this.mapper = Utils.getMapper();
         /**
          * Scheduler to read config file
          * Configuration can change at runtime. Read in the new file.
@@ -134,10 +140,16 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
     }
 
     private GoPluginApiResponse handleRequestGetConfiguration() {
-        Map<String, Object> response = new HashMap<String, Object>();
-        response.put("server-url-external", configField("External GoCD Server URL", "", "1", true, false));
-        response.put("configuration", configField("MS Teams Configuration", "", "2", true, false));
-        return renderJSON(200, response);
+
+        String json = "";
+        try {
+            json = mapper.writeValueAsString(configuration);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Could not convert configuration to json");
+        }
+        DefaultGoPluginApiResponse pluginApiResponse = new DefaultGoPluginApiResponse(200);
+        pluginApiResponse.setResponseBody(json);
+        return pluginApiResponse;
     }
 
     private GoPluginApiResponse handleNotificationsInterestedIn() {

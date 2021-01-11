@@ -225,8 +225,9 @@
 
     function createConfiguration (formConfiguration) {
 
+        console.debug('in' + formConfiguration);
+
         var configuration = {
-            apiMsTeamsHost: formConfiguration.host,
             msTeamsConfig: [],
         }
         formConfiguration.msTeamsConfigs.forEach(msTeamsConfig => {
@@ -244,6 +245,7 @@
                })
            })
         });
+        console.debug('out' + configuration);
         return configuration;
     }
 

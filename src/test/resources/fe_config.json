@@ -1,0 +1,20 @@
+{
+  "server_url": {
+    "display-name": "Server URL",
+    "display-order": "0"
+  },
+  "username": {
+    "required": false,
+    "display-name": "Username",
+    "display-order": "1",
+    "default-value": {
+
+    }
+  },
+  "password": {
+    "secure": true,
+    "required": false,
+    "display-name": "Password",
+    "display-order": "2"
+  }
+}

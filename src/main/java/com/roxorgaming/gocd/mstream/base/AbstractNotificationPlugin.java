@@ -19,7 +19,7 @@ abstract public class AbstractNotificationPlugin {
      * @param secure       If the data in the field should be stored encrypted.
      * @return
      */
-    protected Map<String, Object> configField(String displayName, String defaultValue, String displayOrder, boolean required, boolean secure) {
+    protected Map<String, Object> configField(String displayName, Object defaultValue, String displayOrder, boolean required, boolean secure) {
         Map<String, Object> serverUrlParams = new HashMap<>();
         serverUrlParams.put("display-name", displayName);
         serverUrlParams.put("display-value", defaultValue);
