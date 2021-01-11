@@ -1,5 +1,5 @@
 
-FROM gocd/gocd-goCdClient:v17.11.0 AS goCdClient
+FROM gocd/gocd-server:v17.11.0 AS goCdServer
 RUN mkdir -p /godata/plugins/external
 COPY /target/msteam-notification.jar /godata/plugins/external
 COPY /target/classes/go_notify.conf /$HOME/

@@ -18,15 +18,18 @@ import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import in.ashwanthkumar.utils.lang.StringUtils;
+import lombok.extern.java.Log;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Level;
 
 import static java.util.Arrays.asList;
 
+@Log
 @Extension
 public class GoNotificationPlugin extends AbstractNotificationPlugin implements GoPlugin {
 
@@ -133,7 +136,7 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
     private GoPluginApiResponse handleRequestGetConfiguration() {
         Map<String, Object> response = new HashMap<String, Object>();
         response.put("server-url-external", configField("External GoCD Server URL", "", "1", true, false));
-        response.put("pipelineConfig", configField("Pipeline Notification Rules", "", "2", true, false));
+        response.put("configuration", configField("MS Teams Configuration", "", "2", true, false));
         return renderJSON(200, response);
     }
 
