@@ -2,7 +2,6 @@ package com.roxorgaming.gocd.mstream.configuration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import lombok.experimental.FieldNameConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,7 @@ public class MsTeamsConfig {
     @JsonProperty
     private String iconUrl;
     @JsonProperty
-    private List<String> channels;
+    private List<String> channelWebhooks;
     @JsonProperty
     private List<PipelineConfig> pipelineConfig = new ArrayList<>();
 
@@ -49,9 +48,9 @@ public class MsTeamsConfig {
         }
 
         if(config.containsKey("channels")){
-            setChannels((List<String>) config.get("channels"));
-            if(channels == null || channels.isEmpty()) {
-                errors.append("Channels list cannot be empty")
+            setChannelWebhooks((List<String>) config.get("channels"));
+            if(channelWebhooks == null || channelWebhooks.isEmpty()) {
+                errors.append("Channels webhook's list cannot be empty")
                         .append('\n');
                 this.hasErrors = true;
             }

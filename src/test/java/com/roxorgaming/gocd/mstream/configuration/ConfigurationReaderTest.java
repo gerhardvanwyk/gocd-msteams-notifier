@@ -50,7 +50,7 @@ public class ConfigurationReaderTest {
                 .pipelineConfig(pipeLines)
                 .teamsId("09-987")
                 .displayName("GoCD Build Bot")
-                .channels(channels)
+                .channelWebhooks(channels)
                 .iconUrl("http://iconlib.com/brokonbuild")
                 .build();
 

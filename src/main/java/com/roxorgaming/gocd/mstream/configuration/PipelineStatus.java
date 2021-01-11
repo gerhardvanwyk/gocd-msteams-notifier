@@ -1,8 +1,5 @@
 package com.roxorgaming.gocd.mstream.configuration;
 
-import com.roxorgaming.gocd.mstream.notification.GoNotificationService;
-import com.roxorgaming.gocd.mstream.PipelineListener;
-
 public enum PipelineStatus {
     /**
      * Status of the pipeline while being built.

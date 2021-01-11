@@ -1,50 +1,53 @@
 package com.roxorgaming.gocd.mstream;
 
-import com.microsoft.graph.authentication.IAuthenticationProvider;
-import com.microsoft.graph.http.IHttpRequest;
-import com.microsoft.graph.httpcore.ICoreAuthenticationProvider;
-import com.microsoft.graph.models.extensions.ChatMessage;
-import com.microsoft.graph.models.extensions.IGraphServiceClient;
-import com.microsoft.graph.models.extensions.ItemBody;
-import com.microsoft.graph.models.generated.BodyType;
-import com.microsoft.graph.requests.extensions.GraphServiceClient;
 import com.roxorgaming.gocd.mstream.configuration.Configuration;
-import com.sun.net.httpserver.BasicAuthenticator;
-import okhttp3.Request;
+import com.roxorgaming.gocd.mstream.configuration.MsTeamsConfig;
+import com.thoughtworks.go.plugin.api.logging.Logger;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.entity.EntityBuilder;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Base64;
 import java.util.List;
 
 public class MsTeamsClient {
 
-    public MsTeamsClient push(Message message, Configuration configuration) {
+    private Logger LOG = Logger.getLoggerFor(MsTeamsClient.class);
 
-        IGraphServiceClient graphClient = GraphServiceClient.builder().authenticationProvider(authenticationProvider()).buildClient();
+    public void push(Message message) {
 
-        ChatMessage chatMessage = new ChatMessage();
-        ItemBody body = new ItemBody();
-        body.contentType = BodyType.HTML;
-        try {
-            body.content = message.get();
-        } catch (IOException e) {
-            throw new RuntimeException("Could not read message body", e);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("Could not read message body", e);
+        Configuration  configuration = message.getConfiguration();
+        List<MsTeamsConfig> teams = configuration.getMsTeamsConfigList();
+        for(MsTeamsConfig config: teams){
+            for(String webhooks: config.getChannelWebhooks()){
+                CloseableHttpClient httpclient = HttpClients.createDefault();
+                HttpPost httpPost = new HttpPost(webhooks);
+                httpPost.setHeader("Content-Type","application/json");
+                EntityBuilder builder = EntityBuilder.create();
+                builder.setContentType(ContentType.APPLICATION_JSON);
+                try {
+                    builder.setText(message.get());
+                    HttpEntity httpEntity = builder.build();
+                    httpPost.setEntity(httpEntity);
+                    CloseableHttpResponse response = httpclient.execute(httpPost);
+                    if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+                        LOG.debug("Notification send to MS Team channel " + webhooks);
+                    }else{
+                        LOG.error("Failed to send notification to MSTeams.  Response " + EntityUtils.toString(response.getEntity()));
+                    }
+                } catch (IOException | URISyntaxException e) {
+                    LOG.error("Failed to send notification to MSTeams.", e);
+                }
+
+            }
         }
-        chatMessage.body = body;
-
-        graphClient.teams("{id}").channels("{id}").messages("{id}").replies()
-                .buildRequest()
-                .post(chatMessage);
-        return this;
     }
 
-    private IAuthenticationProvider authenticationProvider() {
-        //Base64.getEncoder().encodeToString()
-        IAuthenticationProvider provider = request -> request.addHeader("Authentication", "Basic ");
-        return provider;
-
-    }
 }

@@ -1,0 +1,259 @@
+{
+  "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "width": "75px",
+          "items": [
+            {
+              "type": "Image",
+              "width": "75px",
+              "horizontalAlignment": "center",
+              "url": "https://roxorgaming.com/wp-content/uploads/2020/02/logo-04-1.png",
+              "altText": "Roxor Logo"
+            }
+          ]
+        },
+        {
+          "width": "stretch",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "GoCD Notifications"
+            }
+          ]
+        },
+        {
+          "width": "auto",
+          "verticalContentAlignment": "center",
+          "items": [
+            {
+              "type": "Image",
+              "width": "12px",
+              "url": "https://messagecardplayground.azurewebsites.net/assets/Close.png",
+              "altText": "Close"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ColumnSet",
+      "spacing": "large",
+      "separator": true,
+      "columns": [
+        {
+          "items": [
+            {
+              "type": "Image",
+              "style": "person",
+              "horizontalAlignment": "center",
+              "url": "https://gocd-pe.gamesys.co.uk/go/assets/andare/gears-loader-6787012330bb6e08de8739ad712d548b2a0029153595445635536efc1ae1398a.gif",
+              "altText": "The build was "
+            }
+          ]
+        },
+        {
+          "width": "stretch",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "**Stage [pipeline/11/stage_name_build/11] has FAILED**"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ColumnSet",
+      "spacing": "large",
+      "separator": true,
+      "columns": [
+        {
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "Revisions"
+            }
+          ]
+        },
+        {
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": " Revision 1"
+            },
+            {
+              "type": "ColumnSet",
+              "spacing": "medium",
+              "columns": [
+                {
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Revision: 5"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Comment: Git commit message "
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Username: username"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Email: user@gmail.com"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Revision: 485214789632589632145896325632"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Comment: Git commit message modification 2 "
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Username: username-agina"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Email: user@gmail.com"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "TextBlock",
+              "text": " Revision 2"
+            },
+            {
+              "type": "ColumnSet",
+              "spacing": "medium",
+              "columns": [
+                {
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Revision: 5"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Comment: Git commit message "
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Username: username"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Email: user@gmail.com"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Revision: 485214789632589632145896325632"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Comment: Git commit message modification 2 "
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Username: username-agina"
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "isSubtle": true,
+                      "text": "Email: user@gmail.com"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {},
+            {
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "Input.ChoiceSet",
+                  "id": "comment",
+                  "value": "Pick a log to view",
+                  "placeholder": "Select log",
+                  "choices": [
+                    {
+                      "title": "Console Link 1",
+                      "value": "http://localhost:5183/go/files/pipeline1/11/stage_name_build/11/Job1/cruise-output/console.log"
+                    },
+                    {
+                      "title": "Console Link 2",
+                      "value": "http://localhost:5183/go/files/pipeline1/11/stage_name_build/11/Job2/cruise-output/console.log"
+                    },
+                    {
+                      "title": "Console Link 3",
+                      "value": "http://localhost:5183/go/files/pipeline1/11/stage_name_build/11/Job3/cruise-output/console.log"
+                    }
+                  ]
+                },
+                {
+                  "potentialAction": [
+                    {
+                      "@type": "OpenUri",
+                      "name": "View conversation"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

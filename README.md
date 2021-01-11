@@ -55,10 +55,10 @@ gocd.msteams {
   # GoCD Server 
   login = "someuser"
   password = "somepassword"
-  api-token = "a-valid-token-from-gocd-goCdClient"
   goCdClient-host = "http://localhost:8153/"
   
   # optional fields
+  api-token = "a-valid-token-from-gocd-goCdClient" Not used currently
   display-console-log-links = true
   display-material-changes = true
   process-all-configuration = true

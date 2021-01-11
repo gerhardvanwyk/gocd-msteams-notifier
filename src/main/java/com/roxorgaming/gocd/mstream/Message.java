@@ -23,6 +23,7 @@ public class Message {
 
     private Logger LOG = Logger.getLoggerFor(Message.class);
 
+
     private final String title;
 
     private final Pipeline details;
@@ -48,65 +49,275 @@ public class Message {
 
     public String get() throws IOException, URISyntaxException {
 
-        StringBuffer buffer = new StringBuffer("<!DOCTYPE html>\n" +
-                "<html lang=\"en\">\n" +
-                "<head>\n" +
-                "    <meta charset=\"UTF-8\">\n" +
-                "    <title>");
-        buffer.append(title).append("</title>\n" +
-                "</head>\n" +
-                "<body>");
+        StringBuffer buffer = new StringBuffer("{\n" +
+                "  \"$schema\": \"https://adaptivecards.io/schemas/adaptive-card.json\",\n" +
+                "  \"type\": \"AdaptiveCard\",\n" +
+                "  \"version\": \"1.0\",\n" +
+                "  \"body\": [\n" +
+                "    {\n" +
+                "      \"type\": \"ColumnSet\",\n" +
+                "      \"columns\": [\n" +
+                "        {\n" +
+                "          \"width\": \"75px\",\n" +
+                "          \"items\": [\n" +
+                "            {\n" +
+                "              \"type\": \"Image\",\n" +
+                "              \"width\": \"75px\",\n" +
+                "              \"horizontalAlignment\": \"center\",\n" +
+                "              \"url\": \"https://roxorgaming.com/wp-content/uploads/2020/02/logo-04-1.png\",\n" +
+                "              \"altText\": \"Roxor Logo\"\n" +
+                "            }\n" +
+                "          ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"width\": \"stretch\",\n" +
+                "          \"items\": [\n" +
+                "            {\n" +
+                "              \"type\": \"TextBlock\",\n" +
+                "              \"text\": \"GoCD Notifications\"\n" +
+                "            }\n" +
+                "          ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"width\": \"auto\",\n" +
+                "          \"verticalContentAlignment\": \"center\",\n" +
+                "          \"items\": [\n" +
+                "            {\n" +
+                "              \"type\": \"Image\",\n" +
+                "              \"width\": \"12px\",\n" +
+                "              \"url\": \"https://messagecardplayground.azurewebsites.net/assets/Close.png\",\n" +
+                "              \"altText\": \"Close\"\n" +
+                "            }\n" +
+                "          ]\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    },");
+        buffer.append("    {\n" +
+                "      \"type\": \"ColumnSet\",\n" +
+                "      \"spacing\": \"large\",\n" +
+                "      \"separator\": true,\n" +
+                "      \"columns\": [\n" +
+                "        {\n" +
+                "          \"items\": [\n" +
+                "            {\n" +
+                "              \"type\": \"Image\",\n" +
+                "              \"style\": \"person\",\n" +
+                "              \"horizontalAlignment\": \"center\",\n" +
+                "              \"url\": \"https://gocd-pe.gamesys.co.uk/go/assets/andare/gears-loader-6787012330bb6e08de8739ad712d548b2a0029153595445635536efc1ae1398a.gif\",\n" +
+                "              \"altText\": \"The build was \"\n" +
+                "            }\n" +
+                "          ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"width\": \"stretch\",\n" +
+                "          \"items\": [\n" +
+                "            {\n" +
+                "              \"type\": \"TextBlock\",\n" +
+                "              \"text\": ");
+        buffer.append("\"**").append(title).append("**\"")
+                .append("            }\n" +
+                        "          ]\n" +
+                        "        }\n" +
+                        "      ]\n" +
+                        "    },");
 
-        getStyleColor(buffer);
-
-        buffer.append("<div><h1>").append(title).append("</h1></div>");
-        buffer.append("<p>").append("</p>");
+//        getStyleColor(buffer);
+//
+//        buffer.append("<div><h1>").append(title).append("</h1></div>");
+//        buffer.append("<p>").append("</p>");
 
         int rc = 1;
-        buffer.append("<div>").append("<h3>").append("Revisions").append("</h3></div>");
+        buffer.append("{\n" +
+                "      \"type\": \"ColumnSet\",\n" +
+                "      \"spacing\": \"large\",\n" +
+                "      \"separator\": true,\n" +
+                "      \"columns\": [\n" +
+                "        {\n" +
+                "          \"items\": [\n" +
+                "            {\n" +
+                "              \"type\": \"TextBlock\",\n" +
+                "              \"text\": \"Revisions\"\n" +
+                "            }\n" +
+                "          ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"items\": [");
         for(MaterialRevision revision: changes){
-            buffer.append("<div><h4>").append(" Revision ").append(rc++).append("</h4></div>");
-            buffer.append("Pipeline: ").append(revision.isPipeline()).append("</div>");
+            buffer.append("            {\n" +
+                    "              \"type\": \"TextBlock\",\n" +
+                    "              \"text\": ").append("\" Revision ").append(rc++).append("\"")
+                    .append("            },\n" +
+                            "            {\n" +
+                            "              \"type\": \"ColumnSet\",\n" +
+                            "              \"spacing\": \"medium\",\n" +
+                            "              \"columns\": [\n" +
+                            "                {\n" +
+                            "                  \"items\": [");
             for(Modification md: revision.getModifications()){
-                buffer.append("<div>").append("Revision: ").append(md.getRevision()).append("</div>");
-                buffer.append("<div>").append("Comment: ").append(md.getComment()).append("</div>");
-                buffer.append("<div>").append("Username: ").append(md.getUserName()).append("</div>");
-                buffer.append("<div>").append("Email: ").append(md.getEmail()).append("</div>");
-                buffer.append("<p>").append("</p>");
+                buffer.append("                  {\n" +
+                        "                      \"type\": \"TextBlock\",\n" +
+                        "                      \"spacing\": \"none\",\n" +
+                        "                      \"isSubtle\": true,\n" +
+                        "                      \"text\":").append("\"Revision: ").append(md.getRevision()).append("\" },");
+                buffer.append("                    {\n" +
+                        "                      \"type\": \"TextBlock\",\n" +
+                        "                      \"spacing\": \"none\",\n" +
+                        "                      \"isSubtle\": true,\n" +
+                        "                      \"text\":").append(" \"Comment: ").append(md.getComment()).append(" \"},");
+                buffer.append("                    {\n" +
+                        "                      \"type\": \"TextBlock\",\n" +
+                        "                      \"spacing\": \"none\",\n" +
+                        "                      \"isSubtle\": true,\n" +
+                        "                      \"text\":").append("\"Username: ").append(md.getUserName()).append("\"},");
+                buffer.append("                    {\n" +
+                        "                      \"type\": \"TextBlock\",\n" +
+                        "                      \"spacing\": \"none\",\n" +
+                        "                      \"isSubtle\": true,\n" +
+                        "                      \"text\":").append("\"Email: ").append(md.getEmail()).append("\"},");
+            }
+            buffer.deleteCharAt(buffer.lastIndexOf(","));
+                        buffer.append("]");  //closing items line 148
+            buffer.append("}\n" +
+                    "  ]\n" +  //closing columns line 136
+                    " },");  //closing ColumnSet Item line 132
+        }
+        buffer.deleteCharAt(buffer.lastIndexOf(","));
+        buffer.append("]");
+        buffer.append("        }\n" +
+                "      ]\n" +
+                "    },");
+        buffer.append("  {\n" +
+                "      \"type\": \"Container\",\n" +
+                "      \"items\": [\n" +
+                "        {\n" +
+                "          \"type\": \"ColumnSet\",\n" +
+                "          \"columns\": [\n" +
+                "            {\n" +
+                "            },\n" +
+                "            {\n" +
+                "              \"width\": \"stretch\",\n" +
+                "              \"items\": [\n" +
+                "                {\n" +
+                "                  \"type\": \"ActionSet\",\n" +
+                "                  \"actions\": [\n" +
+                "                    {\n" +
+                "                      \"type\": \"Action.ShowCard\",\n" +
+                "                      \"title\": \"Add a comment\",\n" +
+                "                      \"card\": {\n" +
+                "                        \"type\": \"AdaptiveCard\",\n" +
+                "                        \"body\": [\n" +
+                "                          {\n" +
+                "                            \"type\": \"Input.Text\",\n" +
+                "                            \"isMultiline\": true,\n" +
+                "                            \"id\": \"textinputid\"\n" +
+                "                          },\n" +
+                "                          {\n" +
+                "                            \"type\": \"ActionSet\",\n" +
+                "                            \"spacing\": \"small\",\n" +
+                "                            \"actions\": [\n" +
+                "                              {\n" +
+                "                                \"type\": \"Action.Http\",\n" +
+                "                                \"method\": \"POST\",\n" +
+                "                                \"body\": \"{}\",\n" +
+                "                                \"title\": \"OK\",\n" +
+                "                                \"url\": \"https://messagecardplaygroundfn.azurewebsites.net/api/HttpPost?code=zJaYHdG4dZdPK0GTymwYzpaCtcPAPec8fTvc2flJRvahwigYWg3p0A==&message=The comment was added successfully\"\n" +
+                "                              }\n" +
+                "                            ]\n" +
+                "                          }\n" +
+                "                        ]\n" +
+                "                      }\n" +
+                "                    },\n");
+
+
+        buffer.append("    {\n" +
+                "                      \"type\": \"Action.OpenUrl\",\n" +
+                "                      \"title\": \"Open Issue\",\n" +
+                "                      \"card\": {\n" +
+                "                        \"type\": \"AdaptiveCard\",\n" +
+                "                        \"body\": [\n" +
+                "                          {\n" +
+                "                            \"type\": \"Input.ChoiceSet\",\n" +
+                "                            \"placeholder\": \"Pick a list\",\n" +
+                "                            \"id\": \"choiceinputid\",\n" +
+                "                            \"isRequired\": true,\n" +
+                "                            \"choices\": [\n");
+
+
+
+
+
+
+        List<String> consoleLogLinks = createConsoleLogLinks(configuration.getGoServerHost(), details, stage, status);
+        int cnt = 1;
+        if (!consoleLogLinks.isEmpty()) {
+            for(String links: consoleLogLinks){
+                buffer.append("{");
+                buffer.append("\"title\":").append("\"Console Link ").append(cnt++).append("\"").append(",\n");
+                buffer.append("\"value\":" ).append("\"").append(links).append("\"").append('\n');
+                buffer.append("},");
             }
         }
+        buffer.deleteCharAt(buffer.lastIndexOf(","));
+        buffer.append("]\n" +
+                "                          },\n" +
+                "                          {\n" +
+                "                            \"type\": \"ActionSet\",\n" +
+                "                            \"spacing\": \"small\",\n" +
+                "                            \"actions\": [\n" +
+                "                              {\n" +
+                "                                \"type\": \"Action.Http\",\n" +
+                "                                \"method\": \"POST\",\n" +
+                "                                \"body\": \"{{choiceinputid.value}}\",\n" +
+                "                                \"title\": \"OK\",\n" +
+                "                                \"url\": \"https://messagecardplaygroundfn.azurewebsites.net/api/HttpPost?code=zJaYHdG4dZdPK0GTymwYzpaCtcPAPec8fTvc2flJRvahwigYWg3p0A==&message=The card was moved to '{{choiceinputid.value}}' successfully\"\n" +
+                "                              }\n" +
+                "                            ]\n" +
+                "                          }\n" +
+                "                        ]\n" +
+                "                      }\n" +
+                "                    }\n" +
+                "                  ]\n" +
+                "                }\n" +
+                "              ]\n" +
+                "            }\n" +
+                "          ]\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    }");
+        buffer.append("    ]\n" +
+                "}");
 
-        buffer.append("<div>Triggered by: ").append(stage.getApprovedBy()).append("</div>\n" +
-                "    <div>Reason: ");
-
-        if (details.getBuildCause().isTriggerForced())
-            buffer.append("Manual Trigger");
-        else
-            buffer.append(details.getBuildCause().getTriggerMessage());
-
-        buffer.append("<p>").append("</p");
-
-        buffer.append("</div>" +
-                "<div>Label: ").append(details.getLabel())
-                .append("</div>");
+//        buffer.append("<div>Triggered by: ").append(stage.getApprovedBy()).append("</div>\n" +
+//                "    <div>Reason: ");
+//
+//        if (details.getBuildCause().isTriggerForced())
+//            buffer.append("Manual Trigger");
+//        else
+//            buffer.append(details.getBuildCause().getTriggerMessage());
+//
+//        buffer.append("<p>").append("</p");
+//
+//        buffer.append("</div>" +
+//                "<div>Label: ").append(details.getLabel())
+//                .append("</div>");
 
         // Describe the root changes that made up this build.
       //  rootConfigDetails(buffer);
 
         //Console Logs
-        buffer.append("<h4>").append("<div>Console Logs: ").append("</div>").append("</h4>").append("<p>");
-
-        List<String> consoleLogLinks = createConsoleLogLinks(configuration.getGoServerHost(), details, stage, status);
-        if (!consoleLogLinks.isEmpty()) {
-            for(String links: consoleLogLinks){
-                buffer.append("<div>").append(links).append("</div>").append('\n');
-            }
-          //  String logLinks = Lists.mkString(consoleLogLinks, "", "", "\n");
-
-        }
-        buffer.append("</p></body>\n" +
-                "</html>");
-        LOG.info("Pushing " + title + " notification to Slack");
+//        buffer.append("<h4>").append("<div>Console Logs: ").append("</div>").append("</h4>").append("<p>");
+//
+//        List<String> consoleLogLinks = createConsoleLogLinks(configuration.getGoServerHost(), details, stage, status);
+//        if (!consoleLogLinks.isEmpty()) {
+//            for(String links: consoleLogLinks){
+//                buffer.append("<div>").append(links).append("</div>").append('\n');
+//            }
+//          //  String logLinks = Lists.mkString(consoleLogLinks, "", "", "\n");
+//
+//        }
+//        buffer.append("</p></body>\n" +
+//                "</html>");
+//        LOG.info("Pushing " + title + " notification to Slack");
 
         return buffer.toString();
     }
@@ -185,7 +396,7 @@ public class Message {
                         pipeline.getCounter(), stage.getName(), stage.getCounter(), job));
             }
             // TODO - May be it's only useful to show the failed job logs instead of all jobs?
-            consoleLinks.add("<a href=" + link.normalize().toASCIIString() + ">" + "| View " + job + " logs </a>");
+            consoleLinks.add(link.normalize().toASCIIString() );
         }
         return consoleLinks;
     }
@@ -214,5 +425,9 @@ public class Message {
         }
         throw new IllegalArgumentException("The list of stages from the pipeline (" + pipelineName +
                 ") doesn't have the active stage (" + stageName + ") for which we got the notification.");
+    }
+
+    public Configuration getConfiguration() {
+        return configuration;
     }
 }
