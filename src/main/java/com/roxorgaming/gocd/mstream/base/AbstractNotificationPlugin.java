@@ -1,6 +1,8 @@
 package com.roxorgaming.gocd.mstream.base;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.roxorgaming.gocd.GoNotificationPlugin;
+import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
@@ -8,6 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AbstractNotificationPlugin {
+
+    private static Logger LOGGER = Logger.getLoggerFor(AbstractNotificationPlugin.class);
 
     /**
      * Create a configuration field for the plugin.
@@ -34,8 +38,9 @@ public class AbstractNotificationPlugin {
         try {
             json = response == null ? null : Utils.getMapper().writeValueAsString(response);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Could not render json object", e);
         }
+        LOGGER.info(json);
         DefaultGoPluginApiResponse pluginApiResponse = new DefaultGoPluginApiResponse(responseCode);
         pluginApiResponse.setResponseBody(json);
         return pluginApiResponse;

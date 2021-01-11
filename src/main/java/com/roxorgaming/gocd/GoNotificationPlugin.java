@@ -2,14 +2,12 @@ package com.roxorgaming.gocd;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.GsonBuilder;
 import com.roxorgaming.gocd.msteams.jsonapi.GoCdClient;
 import com.roxorgaming.gocd.mstream.GoEnvironment;
 import com.roxorgaming.gocd.mstream.MsTeamsPipelineListener;
 import com.roxorgaming.gocd.mstream.PipelineListener;
 import com.roxorgaming.gocd.mstream.base.AbstractNotificationPlugin;
 import com.roxorgaming.gocd.mstream.base.Utils;
-import com.roxorgaming.gocd.mstream.configuration.Configuration;
 import com.roxorgaming.gocd.mstream.configuration.ConfigReader;
 import com.roxorgaming.gocd.mstream.configuration.Configuration;
 import com.roxorgaming.gocd.mstream.notification.PipelineInfo;
@@ -29,7 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.logging.Level;
 
 import static java.util.Arrays.asList;
 
@@ -125,7 +122,7 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
 
 
     private GoPluginApiResponse handleRequestGetView() {
-        Map<String, Object> response = new HashMap<String, Object>();
+        Map<String, Object> response = new HashMap<>();
 
         try {
             String template = IOUtils.toString(getClass().getResourceAsStream("/views/config.template.html"), "UTF-8");
@@ -134,22 +131,11 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
             response.put("error", "Can't load view template");
             return renderJSON(500, response);
         }
-
-
         return renderJSON(200, response);
     }
 
     private GoPluginApiResponse handleRequestGetConfiguration() {
-
-        String json = "";
-        try {
-            json = mapper.writeValueAsString(configuration);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Could not convert configuration to json");
-        }
-        DefaultGoPluginApiResponse pluginApiResponse = new DefaultGoPluginApiResponse(200);
-        pluginApiResponse.setResponseBody(json);
-        return pluginApiResponse;
+        return renderJSON(200, configField("configuration", configuration, "0", true, false));
     }
 
     private GoPluginApiResponse handleNotificationsInterestedIn() {
