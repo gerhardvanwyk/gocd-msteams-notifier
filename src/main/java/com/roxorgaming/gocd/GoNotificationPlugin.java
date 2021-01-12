@@ -1,7 +1,5 @@
 package com.roxorgaming.gocd;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.roxorgaming.gocd.msteams.jsonapi.GoCdClient;
 import com.roxorgaming.gocd.mstream.GoEnvironment;
 import com.roxorgaming.gocd.mstream.MsTeamsPipelineListener;
@@ -17,10 +15,8 @@ import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
 import com.thoughtworks.go.plugin.api.annotation.Extension;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
-import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import in.ashwanthkumar.utils.lang.StringUtils;
-import lombok.extern.java.Log;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -30,7 +26,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static java.util.Arrays.asList;
 
-@Log
 @Extension
 public class GoNotificationPlugin extends AbstractNotificationPlugin implements GoPlugin {
 
@@ -42,7 +37,6 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
     private GoEnvironment environment = new GoEnvironment();
     private Configuration configuration;
     private PipelineListener pipelineListener;
-    private ObjectMapper mapper;
 
     private final Timer timer = new Timer();
     private long configLastModified = 0L;
@@ -51,7 +45,6 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
 
     public GoNotificationPlugin() {
         File pluginConfigFile = findGoNotifyConfigPath();
-        this.mapper = Utils.getMapper();
         /**
          * Scheduler to read config file
          * Configuration can change at runtime. Read in the new file.
@@ -93,11 +86,16 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
     public GoPluginApiResponse handle(GoPluginApiRequest goPluginApiRequest) {
         String requestName = goPluginApiRequest.requestName();
 
+        LOGGER.info(requestName);
+
         if (requestName.equals("notifications-interested-in")) {
             return handleNotificationsInterestedIn();
 
         } else if (requestName.equals("stage-status")) {
             return handleStageNotification(goPluginApiRequest);
+
+        } else if (requestName.equals("go.processor.plugin-settings.get")){
+           return handleGetPluginSettings();
 
         } else if (requestName.equals("go.plugin-settings.get-view")) {
             return handleRequestGetView();
@@ -111,7 +109,24 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
         return null;
     }
 
+    /**
+     * Here we return the configuration values. This needs to be
+     * called explicitly by the PluginUI
+     * @return
+     */
+    private GoPluginApiResponse handleGetPluginSettings() {
+        List<Object> response = Arrays.asList();
+        return renderJSON(200, response);
+    }
+
+
+    /**
+     * Here we validate any specific configuration values
+     * @param requestBody
+     * @return
+     */
     private GoPluginApiResponse handleValidateConfig(String requestBody) {
+        LOGGER.info("Request validateConfiguration " + requestBody);
         List<Object> response = Arrays.asList();
         return renderJSON(200, response);
     }
@@ -135,6 +150,11 @@ public class GoNotificationPlugin extends AbstractNotificationPlugin implements 
         return renderJSON(200, response);
     }
 
+    /**
+     * Here we need to create the Settings Configuration Object
+     * - This is used to create the schema in GoCD??
+     * @return
+     */
     private GoPluginApiResponse handleRequestGetConfiguration() {
         return renderJSON(200, configField("configuration", configuration, "0", true, false));
     }
