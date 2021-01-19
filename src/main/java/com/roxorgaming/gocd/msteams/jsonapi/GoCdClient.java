@@ -1,8 +1,8 @@
 package com.roxorgaming.gocd.msteams.jsonapi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.roxorgaming.gocd.mstream.base.Utils;
-import com.roxorgaming.gocd.mstream.configuration.Configuration;
+import com.roxorgaming.gocd.msteams.base.Utils;
+import com.roxorgaming.gocd.msteams.configuration.Configuration;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 
 import javax.xml.bind.DatatypeConverter;

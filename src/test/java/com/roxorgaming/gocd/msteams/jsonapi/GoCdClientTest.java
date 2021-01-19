@@ -1,6 +1,6 @@
 package com.roxorgaming.gocd.msteams.jsonapi;
 
-import com.roxorgaming.gocd.mstream.configuration.Configuration;
+import com.roxorgaming.gocd.msteams.configuration.Configuration;
 import org.junit.jupiter.api.*;
 
 import java.io.IOException;

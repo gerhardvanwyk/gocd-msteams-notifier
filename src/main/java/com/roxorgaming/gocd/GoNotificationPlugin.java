@@ -1,14 +1,14 @@
 package com.roxorgaming.gocd;
 
 import com.roxorgaming.gocd.msteams.jsonapi.GoCdClient;
-import com.roxorgaming.gocd.mstream.GoEnvironment;
-import com.roxorgaming.gocd.mstream.MsTeamsPipelineListener;
-import com.roxorgaming.gocd.mstream.PipelineListener;
-import com.roxorgaming.gocd.mstream.base.AbstractNotificationPlugin;
-import com.roxorgaming.gocd.mstream.base.Utils;
-import com.roxorgaming.gocd.mstream.configuration.ConfigReader;
-import com.roxorgaming.gocd.mstream.configuration.Configuration;
-import com.roxorgaming.gocd.mstream.notification.PipelineInfo;
+import com.roxorgaming.gocd.msteams.GoEnvironment;
+import com.roxorgaming.gocd.msteams.MsTeamsPipelineListener;
+import com.roxorgaming.gocd.msteams.PipelineListener;
+import com.roxorgaming.gocd.msteams.base.AbstractNotificationPlugin;
+import com.roxorgaming.gocd.msteams.base.Utils;
+import com.roxorgaming.gocd.msteams.configuration.ConfigReader;
+import com.roxorgaming.gocd.msteams.configuration.Configuration;
+import com.roxorgaming.gocd.msteams.notification.PipelineInfo;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.GoPlugin;
 import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
